@@ -1,7 +1,5 @@
 %{
-  title: "oceanbase集群环境部署",
-  description: "",
-  keywords: []
+  title: "oceanbase集群环境部署"
 }
 ---
 

@@ -32,28 +32,17 @@ defmodule CunweiWong do
     end
   end
 
-  def render_reads(reads) do
-    for page <- reads do
-      render_file(page.html_path, Render.reads(page))
-    end
-  end
-
   def build_pages() do
     pages = Content.all_pages()
     all_posts = Content.all_posts()
     about_page = Content.about_page()
-    reads = Content.get_reads()
     assert_uniq_page_ids!(pages)
     render_file("index.html", Render.index(%{posts: Content.active_posts()}))
     render_file("404.html", Render.page(Content.not_found_page()))
     render_file(about_page.html_path, Render.page(about_page))
     render_file("archive/index.html", Render.archive(%{posts: all_posts}))
-    render_file("reads/index.html", Render.reads_index(%{pages: reads}))
-    write_file("index.xml", Render.rss(all_posts))
-    write_file("sitemap.xml", Render.sitemap(pages))
     render_posts(all_posts)
     render_redirects(Content.redirects())
-    render_reads(reads)
     :ok
   end
 

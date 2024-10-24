@@ -1,7 +1,5 @@
 %{
-  title: "oceanbase-oms环境部署",
-  description: "",
-  keywords: []
+  title: "oceanbase-oms环境部署"
 }
 ---
 

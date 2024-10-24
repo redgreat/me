@@ -1,6 +1,5 @@
 %{
-  title: "Hello. My name is Jorin.",
-  description: "Details about what I work on and past projects"
+  title: "Hello. My name is Jorin."
 }
 ---
 

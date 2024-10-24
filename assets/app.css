@@ -34,13 +34,7 @@ body {
   max-width: 60%;
   margin: auto;
   padding: 2% 5%;
-  line-height: 150%;
-  font-size: 120%;
-}
-
-.footer {
-  position: absolute;
-  bottom: 12px;
+  line-height: 120%;
 }
 
 h1 {
@@ -111,8 +105,8 @@ ul.posts > li, ul.hide-list > li {
 }
 
 header {
-  margin-top: 2%;
-  margin-bottom: 12%;
+  width: 100%;
+  font-size: 120%;
 }
 
 footer {
@@ -135,16 +129,12 @@ blockquote {
   font-style: italic;
 }
 
-.post-link {
-  color: black;
-}
-
 .post {
-  margin: 12% 0;
+  margin: 3% 0;
 }
 
 .post-header {
-  margin-bottom: 3%;
+  margin-bottom: 1%;
 }
 
 .post-header a {
@@ -163,6 +153,58 @@ blockquote {
   max-width: 100%;
 }
 
+.post-date {
+  margin: 2% 0;
+  font-size: 80%;
+  line-height: 150%;
+  font-weight: bold;
+}
+
+.post-link {
+  color: black;
+  font-size: 150%;
+}
+
+.post-title {
+  text-wrap: balance;
+  margin-bottom: 1%;
+}
+
+.archive-post {
+  margin-top: 3%;
+}
+
+.archive-date {
+  margin: 2% 0;
+  font-size: 80%;
+  line-height: 150%;
+  font-weight: bold;
+}
+
+.archive-title {
+  text-wrap: balance;
+  margin-bottom: 1%;
+}
+
+.posts-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+.left {
+  text-align: left;
+}
+
+.right {
+  text-align: right;
+}
+
+.footer {
+  position: absolute;
+  bottom: 12px;
+}
+
 .post-footer {
   margin: 24% auto;
   text-align: center;
@@ -170,13 +212,10 @@ blockquote {
   font-size: 80%;
   line-height: 170%;
 }
+
 .post-footer a {
   /* accessability issue if link is not marked as such here */
   text-decoration: underline;
-}
-
-.post-title {
-  text-wrap: balance;
 }
 
 .author {
@@ -229,21 +268,6 @@ input {
   margin: 3% 0;
   cursor: pointer;
 }
-
-.newsletter-section {
-  margin-bottom: 12%;
-  margin-top: 12%;
-  font-size: 80%;
-}
-
-.newsletter-section label {
-  margin-right: 10px;
-}
-
-.archive-post {
-  margin-top: 4%;
-}
-
 
 /*
  * Print style
