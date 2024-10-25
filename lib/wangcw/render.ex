@@ -34,6 +34,12 @@ defmodule CunweiWong.Render do
         <p id="footer-cr"></p>
       </footer>
       <script>
+        document.querySelectorAll('code').forEach(function(el) {
+          el.contentEditable = true
+        });
+        function scrollToTop() {
+          window.scrollTo({top: 0, behavior: 'smooth'});
+        };
         document.addEventListener('DOMContentLoaded', function() {
           let currentYear = new Date().getFullYear();
           let footerYear = document.getElementById('footer-cr');
