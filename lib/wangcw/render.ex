@@ -31,21 +31,17 @@ defmodule CunweiWong.Render do
         <div class="right" onclick="scrollToTop()" style="cursor: pointer;">返回顶部</div>
       </div>
       <footer>
-        <p></p>
+        <p id="footer-cr"></p>
       </footer>
       <script>
-        document.querySelectorAll('code').forEach(function(el) {
-          el.contentEditable = true
-        })
         document.addEventListener('DOMContentLoaded', function() {
           let currentYear = new Date().getFullYear();
-          let footerP = document.querySelector('footer p');
-          let link = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
-          footerP.innerHTML = "Copyright © " + link + " 2020-" + currentYear + " All Rights Reserved";
+          let footerYear = document.getElementById('footer-cr');
+          let wlink = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
+          let elink = '<a href="https://www.erlang.org" target="_blank">Elixir/OTP</a>';
+          let vlink = '<a href="https://vercel.com" target="_blank">Vercel</a>';
+          footerYear.innerHTML = "Generate Use " + elink + " Publish at " + vlink + "<br>Copyright © " + wlink + " 2020-" + currentYear + " All Rights Reserved";
         });
-        function scrollToTop() {
-        window.scrollTo({top: 0, behavior: 'smooth'});
-      }
       </script>
     </.layout>
     """
@@ -76,14 +72,16 @@ defmodule CunweiWong.Render do
       <hr />
       <p><i>阅读更多文章 <a href="/archive/">归档</a></i></p>
       <footer>
-        <p></p>
+        <p id="footer-cr"></p>
       </footer>
       <script>
         document.addEventListener('DOMContentLoaded', function() {
           let currentYear = new Date().getFullYear();
-          let footerP = document.querySelector('footer p');
-          let link = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
-          footerP.innerHTML = "Copyright © " + link + " 2020-" + currentYear + " All Rights Reserved";
+          let footerYear = document.getElementById('footer-cr');
+          let wlink = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
+          let elink = '<a href="https://www.erlang.org" target="_blank">Elixir/OTP</a>';
+          let vlink = '<a href="https://vercel.com" target="_blank">Vercel</a>';
+          footerYear.innerHTML = "Generate Use " + elink + " Publish at " + vlink + "<br>Copyright © " + wlink + " 2020-" + currentYear + " All Rights Reserved";
         });
       </script>
     </.layout>
@@ -114,14 +112,16 @@ defmodule CunweiWong.Render do
         <% end %>
       </div>
       <footer>
-        <p></p>
+        <p id="footer-cr"></p>
       </footer>
       <script>
         document.addEventListener('DOMContentLoaded', function() {
           let currentYear = new Date().getFullYear();
-          let footerP = document.querySelector('footer p');
-          let link = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
-          footerP.innerHTML = "Copyright © " + link + " 2020-" + currentYear + " All Rights Reserved";
+          let footerYear = document.getElementById('footer-cr');
+          let wlink = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
+          let elink = '<a href="https://www.erlang.org" target="_blank">Elixir/OTP</a>';
+          let vlink = '<a href="https://vercel.com" target="_blank">Vercel</a>';
+          footerYear.innerHTML = "Generate Use " + elink + " Publish at " + vlink + "<br>Copyright © " + wlink + " 2020-" + currentYear + " All Rights Reserved";
         });
       </script>
     </.layout>
@@ -143,14 +143,16 @@ defmodule CunweiWong.Render do
         <%= raw @body %>
       </article>
       <footer>
-        <p></p>
+        <p id="footer-cr"></p>
       </footer>
       <script>
         document.addEventListener('DOMContentLoaded', function() {
           let currentYear = new Date().getFullYear();
-          let footerP = document.querySelector('footer p');
-          let link = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
-          footerP.innerHTML = "Copyright © " + link + " 2020-" + currentYear + " All Rights Reserved";
+          let footerYear = document.getElementById('footer-cr');
+          let wlink = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
+          let elink = '<a href="https://www.erlang.org" target="_blank">Elixir/OTP</a>';
+          let vlink = '<a href="https://vercel.com" target="_blank">Vercel</a>';
+          footerYear.innerHTML = "Generate Use " + elink + " Publish at " + vlink + "<br>Copyright © " + wlink + " 2020-" + currentYear + " All Rights Reserved";
         });
       </script>
     </.layout>
