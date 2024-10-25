@@ -1,19 +1,20 @@
-#
 个人博客
 
-## Structure
+很多方便好用的开源md解析博客应用，但是想学习下elixir，fork了这个仓，利用vercel免费部署静态网页，希望后期能坚持更新文章。
 
-- `pages/` contains the markdown and YAML content I regularly publish
-- `assets/` contains static content
-- `lib/` contains the code generating the side
-- `output/` is where the generated files are rendered
+## 结构
+
+- `pages/` 发布文章
+- `assets/` 图片等多媒体资源
+- `lib/` 生成html代码
+- `output/` 静态网页
 
 
-## Running
+## 运行
 
-- `mix deps.get` to install dependencies
-- `mix compile` compiles code and generates the site during the compile step. This runs on commits using a Github Action.
-- `iex -S mix` runs a dev server serving the side for local development
+- `mix deps.get` 安装依赖
+- `mix compile` 变异
+- `iex -S mix` 本地运行
 
 
 ## Acknowledgement
