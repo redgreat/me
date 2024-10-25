@@ -1,7 +1,7 @@
 module.exports = {
   content: [
     "./**/*.js",
-    "../lib/jorin_me.ex",
+    "../lib/wangcw.ex",
   ],
   plugins: [
     require("@tailwindcss/typography"),

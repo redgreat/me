@@ -44,7 +44,7 @@ defmodule CunweiWong.Render do
           let currentYear = new Date().getFullYear();
           let footerYear = document.getElementById('footer-cr');
           let wlink = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
-          let elink = '<a href="https://www.erlang.org" target="_blank">Elixir/OTP</a>';
+          let elink = '<a href="https://erlang.org" target="_blank">Elixir/OTP</a>';
           let vlink = '<a href="https://vercel.com" target="_blank">Vercel</a>';
           footerYear.innerHTML = "Generate Use " + elink + " Publish at " + vlink + "<br>Copyright © " + wlink + " 2020-" + currentYear + " All Rights Reserved";
         });
@@ -85,7 +85,7 @@ defmodule CunweiWong.Render do
           let currentYear = new Date().getFullYear();
           let footerYear = document.getElementById('footer-cr');
           let wlink = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
-          let elink = '<a href="https://www.erlang.org" target="_blank">Elixir/OTP</a>';
+          let elink = '<a href="https://erlang.org" target="_blank">Elixir/OTP</a>';
           let vlink = '<a href="https://vercel.com" target="_blank">Vercel</a>';
           footerYear.innerHTML = "Generate Use " + elink + " Publish at " + vlink + "<br>Copyright © " + wlink + " 2020-" + currentYear + " All Rights Reserved";
         });
@@ -125,7 +125,7 @@ defmodule CunweiWong.Render do
           let currentYear = new Date().getFullYear();
           let footerYear = document.getElementById('footer-cr');
           let wlink = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
-          let elink = '<a href="https://www.erlang.org" target="_blank">Elixir/OTP</a>';
+          let elink = '<a href="https://erlang.org" target="_blank">Elixir/OTP</a>';
           let vlink = '<a href="https://vercel.com" target="_blank">Vercel</a>';
           footerYear.innerHTML = "Generate Use " + elink + " Publish at " + vlink + "<br>Copyright © " + wlink + " 2020-" + currentYear + " All Rights Reserved";
         });
@@ -156,7 +156,7 @@ defmodule CunweiWong.Render do
           let currentYear = new Date().getFullYear();
           let footerYear = document.getElementById('footer-cr');
           let wlink = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
-          let elink = '<a href="https://www.erlang.org" target="_blank">Elixir/OTP</a>';
+          let elink = '<a href="https://erlang.org" target="_blank">Elixir/OTP</a>';
           let vlink = '<a href="https://vercel.com" target="_blank">Vercel</a>';
           footerYear.innerHTML = "Generate Use " + elink + " Publish at " + vlink + "<br>Copyright © " + wlink + " 2020-" + currentYear + " All Rights Reserved";
         });
