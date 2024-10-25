@@ -200,5 +200,4 @@ defmodule CunweiWong.Render do
     </html>
     """
   end
-
 end
