@@ -179,7 +179,6 @@ defmodule CunweiWong.Render do
           <div class="social">
             <a href="/">主页</a>
             <a href="/about/">关于</a>
-            <a href="https://github.com/redgreat">Github</a>
           </div>
         </header>
         <%= render_slot(@inner_block) %>

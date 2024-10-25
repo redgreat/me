@@ -13,7 +13,7 @@
 ## 运行
 
 - `mix deps.get` 安装依赖
-- `mix compile` 变异
+- `mix compile` 编译
 - `iex -S mix` 本地运行
 
 
