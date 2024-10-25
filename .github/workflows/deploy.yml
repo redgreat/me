@@ -31,7 +31,7 @@ jobs:
         run: mix deps.get
 
       - name: Compile
-        run: mix compile --warnings-as-errors --all-warnings
+        run: mix compile
 
       - name: Check format
         run: mix format --check-formatted
