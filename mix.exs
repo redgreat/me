@@ -21,7 +21,7 @@ defmodule CunweiWong.MixProject do
   defp deps do
     [
       {:nimble_publisher, "~> 1.1.0"},
-      {:makeup_elixir, "~> 0.16.2"},
+      {:makeup_elixir, "~> 1.0.0"},
       {:makeup_js, "~> 0.1.0"},
       {:makeup_html, "~> 0.1.1"},
       {:phoenix_live_view, "~> 0.20.17"},
