@@ -29,7 +29,7 @@ defmodule CunweiWong.MixProject do
       {:yaml_elixir, "~> 2.11.0"},
       {:html_sanitize_ex, "~> 1.4.3"},
       {:tailwind, "~> 0.2.4"},
-      {:bandit, "~> 1.5.7"},
+      {:bandit, "~> 1.6.1"},
       {:exsync, "~> 0.4.1"},
       {:credo, "~> 1.7.8"}
     ]
