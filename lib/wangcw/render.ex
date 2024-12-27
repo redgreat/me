@@ -223,17 +223,16 @@ defmodule CunweiWong.Render do
             </div>
           </header>
           <main class="content">
-            <%= render_slot(@inner_block) %>
+          <%= render_slot(@inner_block) %>
           </main>
           <footer class="footer">
-            <p id="footer-cr"></p>
+          <p id="footer-cr"></p>
           </footer>
         </div>
       </body>
     </html>
     """
   end
-
 
   def redirect(assigns) do
     ~H"""

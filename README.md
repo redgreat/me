@@ -4,7 +4,8 @@
 
 ## 结构
 
-- `pages/` 发布文章
+- `pages/posts` 发布文章
+- `pages/routs` 轨迹网页
 - `assets/` 图片等多媒体资源
 - `lib/` 生成html代码
 - `output/` 静态网页

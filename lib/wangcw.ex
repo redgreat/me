@@ -64,16 +64,16 @@ defmodule CunweiWong do
     write_file(path, safe)
   end
 
-  defp copy_html_files do
-    source_html_dir = Path.join(File.cwd!(), "pages/html")
-    target_html_dir = Path.join(@output_dir, "html")
+  defp route_file do
+    src_dir = Path.join(File.cwd!(), "pages/routes")
+    tar_dir = Path.join(@output_dir, "routes")
 
-    if File.exists?(source_html_dir) do
-      File.mkdir_p!(target_html_dir)
-      File.cp_r!(source_html_dir, target_html_dir)
-      Logger.info("Copied all HTML files to #{target_html_dir}")
+    if File.exists?(src_dir) do
+      File.mkdir_p!(tar_dir)
+      File.cp_r!(src_dir, tar_dir)
+      Logger.info("Copied all HTML files to #{tar_dir}")
     else
-      Logger.warning("HTML source directory #{source_html_dir} does not exist. Skipping copy.")
+      Logger.warning("HTML source directory #{src_dir} does not exist. Skipping copy.")
     end
   end
 
@@ -83,8 +83,8 @@ defmodule CunweiWong do
     File.mkdir_p!(@output_dir)
     Logger.info("Copying static files")
     File.cp_r!("assets/static", @output_dir)
-    Logger.info("Copying HTML files")
-    copy_html_files()
+    Logger.info("Copying Routes files")
+    route_file()
     Logger.info("Building pages")
 
     {micro, :ok} =

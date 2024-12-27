@@ -50,7 +50,7 @@ defmodule CunweiWong.Content do
   end
 
   def all_routes do
-    html_dir = Path.join(File.cwd!(), "pages/html/")
+    html_dir = Path.join(File.cwd!(), "pages/routes/")
 
     html_files =
       html_dir
@@ -59,26 +59,12 @@ defmodule CunweiWong.Content do
       |> Enum.map(fn file ->
         %{
           title: Path.basename(file, ".html"),
-          route: "/html/#{file}"
+          route: "/routes/#{file}"
         }
       end)
 
     html_files
   end
-
-  # def routes do
-  #   html_files = File.ls!(Path.join(["html"]))
-  #   |> Enum.map(&{&1, Path.join(["html", &1])})
-  #   Enum.map(html_files, fn {filename, path} ->
-  #       %{
-  #         id: "routes-#{filename}",
-  #         type: :route,
-  #         title: String.replace(filename, ".html", ""),
-  #         path: "/routes/#{filename}",
-  #         html_path: Path.join(["routes", filename])
-  #       }
-  #     end)
-  # end
 
   def about_page do
     @pages |> Enum.find(&(&1.id == "about"))
