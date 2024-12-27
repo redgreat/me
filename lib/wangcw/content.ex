@@ -49,6 +49,37 @@ defmodule CunweiWong.Content do
     all_posts() |> Enum.reject(& &1.archive)
   end
 
+  def all_routes do
+    html_dir = Path.join(File.cwd!(), "pages/html/")
+
+    html_files =
+      html_dir
+      |> File.ls!()
+      |> Enum.filter(&String.ends_with?(&1, ".html"))
+      |> Enum.map(fn file ->
+        %{
+          title: Path.basename(file, ".html"),
+          route: "/html/#{file}"
+        }
+      end)
+
+    html_files
+  end
+
+  # def routes do
+  #   html_files = File.ls!(Path.join(["html"]))
+  #   |> Enum.map(&{&1, Path.join(["html", &1])})
+  #   Enum.map(html_files, fn {filename, path} ->
+  #       %{
+  #         id: "routes-#{filename}",
+  #         type: :route,
+  #         title: String.replace(filename, ".html", ""),
+  #         path: "/routes/#{filename}",
+  #         html_path: Path.join(["routes", filename])
+  #       }
+  #     end)
+  # end
+
   def about_page do
     @pages |> Enum.find(&(&1.id == "about"))
   end
