@@ -214,21 +214,14 @@ defmodule CunweiWong.Render do
         <link rel="stylesheet" href="/assets/app.css" />
       </head>
       <body>
-        <div class="flex-container">
-          <header>
-            <div class="social">
-              <a href="/">主页</a>
-              <a href="/routes/">轨迹</a>
-              <a href="/about/">关于</a>
-            </div>
-          </header>
-          <main class="content">
-          <%= render_slot(@inner_block) %>
-          </main>
-          <footer class="footer">
-          <p id="footer-cr"></p>
-          </footer>
-        </div>
+        <header>
+          <div class="social">
+            <a href="/">主页</a>
+            <a href="/routes/">轨迹</a>
+            <a href="/about/">关于</a>
+          </div>
+        </header>
+        <%= render_slot(@inner_block) %>
       </body>
     </html>
     """
