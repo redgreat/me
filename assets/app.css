@@ -185,6 +185,10 @@ blockquote {
   margin-bottom: 1%;
 }
 
+.routes-post {
+  margin-top: 3%;
+}
+
 .posts-footer {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -140,11 +140,11 @@ defmodule CunweiWong.Render do
       title={Content.site_title()}
       route="/routes/"
     >
-      <h3>日常通勤等轨迹，定位点来自RaceBox设备</h3>
-      <div class="routes">
+      <p><em>日常轨迹</em></p>
+      <div class="posts">
       <%= for route <- assigns.routes do %>
         <a href={route.route} class="route-link">
-          <div class="route">
+          <div class="routes-post">
             <div class="route-title"><%= route.title %></div>
           </div>
         </a>
