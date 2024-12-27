@@ -140,7 +140,7 @@ defmodule CunweiWong.Render do
       title={Content.site_title()}
       route="/routes/"
     >
-      <h1>轨迹</h1>
+      <h3>日常通勤等轨迹，定位点来自RaceBox设备</h3>
       <div class="routes">
       <%= for route <- assigns.routes do %>
         <a href={route.route} class="route-link">
@@ -214,18 +214,26 @@ defmodule CunweiWong.Render do
         <link rel="stylesheet" href="/assets/app.css" />
       </head>
       <body>
-        <header>
-          <div class="social">
-            <a href="/">主页</a>
-            <a href="/about/">关于</a>
-            <a href="/routes/">轨迹</a>
-          </div>
-        </header>
-        <%= render_slot(@inner_block) %>
+        <div class="flex-container">
+          <header>
+            <div class="social">
+              <a href="/">主页</a>
+              <a href="/routes/">轨迹</a>
+              <a href="/about/">关于</a>
+            </div>
+          </header>
+          <main class="content">
+            <%= render_slot(@inner_block) %>
+          </main>
+          <footer class="footer">
+            <p id="footer-cr"></p>
+          </footer>
+        </div>
       </body>
     </html>
     """
   end
+
 
   def redirect(assigns) do
     ~H"""

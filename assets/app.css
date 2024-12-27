@@ -305,6 +305,29 @@ input {
   }
 }
 
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  flex: 0 1 auto;
+}
+
+main.content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+footer.footer {
+  flex: 0 1 auto;
+  margin-top: auto;
+  width: 100%;
+}
 
 /*
  * Github-inspired code highlighting
