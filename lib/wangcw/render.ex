@@ -134,6 +134,39 @@ defmodule CunweiWong.Render do
     """
   end
 
+  def routes(assigns) do
+    ~H"""
+    <.layout
+      title={Content.site_title()}
+      route="/routes/"
+    >
+      <p><em>日常轨迹</em></p>
+      <div class="posts">
+      <%= for route <- assigns.routes do %>
+        <a href={route.route} class="route-link">
+          <div class="routes-post">
+            <div class="route-title"><%= route.title %></div>
+          </div>
+        </a>
+      <% end %>
+    </div>
+      <footer>
+        <p id="footer-cr"></p>
+      </footer>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          let currentYear = new Date().getFullYear();
+          let footerYear = document.getElementById('footer-cr');
+          let wlink = '<a href="https://www.wongcw.cn" target="_blank">wangcw</a>';
+          let elink = '<a href="https://erlang.org" target="_blank">Elixir/OTP</a>';
+          let vlink = '<a href="https://vercel.com" target="_blank">Vercel</a>';
+          footerYear.innerHTML = "Generate Use " + elink + " Publish at " + vlink + "<br>Copyright © " + wlink + " 2020-" + currentYear + " All Rights Reserved";
+        });
+      </script>
+    </.layout>
+    """
+  end
+
   def page(assigns) do
     ~H"""
     <.layout
@@ -184,6 +217,7 @@ defmodule CunweiWong.Render do
         <header>
           <div class="social">
             <a href="/">主页</a>
+            <a href="/routes/">轨迹</a>
             <a href="/about/">关于</a>
           </div>
         </header>
