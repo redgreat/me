@@ -57,6 +57,7 @@ defmodule CunweiWong.Render do
     grouped_posts =
       assigns.posts
       |> Enum.group_by(& &1.date)
+      |> Enum.sort_by(fn {date, _posts} -> date end, {:desc, Date})
 
     ~H"""
     <.layout
@@ -98,6 +99,7 @@ defmodule CunweiWong.Render do
     grouped_posts =
       assigns.posts
       |> Enum.group_by(& &1.date)
+      |> Enum.sort_by(fn {date, _posts} -> date end, {:desc, Date})
 
     ~H"""
     <.layout
