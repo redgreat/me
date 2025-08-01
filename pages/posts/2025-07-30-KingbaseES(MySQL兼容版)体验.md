@@ -593,6 +593,8 @@ GRANT USAGE ON SCHEMA PUBLIC TO user_wh;
 
 ### 数据迁移测试
 使用金仓提供的win数据迁移工具KDTS  
+![](http://fn.wongcw.cn:9080/i/2025/08/01/688c37a846450.png)
+
 本次迁移测试项目是日常运维的一套仓储系统，里面包含大量存储过程、自定义函数、视图，少部分表带框架，查看数据、结构迁移难度以及SQL兼容性。
 
 #### 迁移过程
@@ -601,10 +603,15 @@ GRANT USAGE ON SCHEMA PUBLIC TO user_wh;
 
 #### 首次迁移结果
 看错误详情，存储过程和自定义函数的创建语法不能自动转换，需要手动创建。部分外键约束在迁移的时候不能自动设置忽略写入数据，表数据部分也会部分写入失败。
+![](http://fn.wongcw.cn:9080/i/2025/08/01/688c37ada7c16.png)
 
 总体来说自动转换所占百分比还是挺高的，重点在于自定义函数和存储过程的逻辑重写。
+![](http://fn.wongcw.cn:9080/i/2025/08/01/688c37b9d78eb.png)
+
+![](http://fn.wongcw.cn:9080/i/2025/08/01/688c37bcbb905.png)
 
 迁移过程中，目标库性能消耗不是很大，但也取决于迁移任务设置的线程池大小、迁移对象数量等因素。
+![](http://fn.wongcw.cn:9080/i/2025/08/01/688c37b38b197.png)
 
 ## MySQL兼容性测试结果
 
@@ -765,6 +772,192 @@ LIMIT 10;
 ```
 MySQL Error 2013 (HY000): Lost connection to MySQL server at 'waiting for initial communication packet', system error: 10060
 ```
+
+### 额外测试
+
+#### 函数迁移
+项目里有一个自定义序列获取函数，通过实体表记录某个前缀具体到哪个序列，在MySQL兼容版中需要手动调整。
+
+原MySQL函数：
+```sql
+CREATE DEFINER=`user_wh`@`%` FUNCTION `fn_nextval`(
+PREFIX_NO char(2)) RETURNS char(12) CHARSET utf8mb3
+    SQL SECURITY INVOKER
+    COMMENT '获取自定义序列'
+BEGIN
+   
+   UPDATE sys_sequence
+      SET current_value = LAST_INSERT_ID(current_value + increment)
+    WHERE seq_no = PREFIX_NO;
+   
+   RETURN CONCAT(PREFIX_NO,LPAD(CAST(LAST_INSERT_ID() AS CHAR),10,0));
+	
+END
+```
+经检查，系统函数在Kingbase里均存在，比如LAST_INSERT_ID()，CONCAT。现在只需修改下创建语法
+
+```sql
+CREATE OR REPLACE FUNCTION whcenter.fn_nextval(PREFIX_NO bpchar)
+ RETURNS bpchar
+ BEGIN
+   UPDATE "whcenter"."sys_sequence"
+     SET current_value = LAST_INSERT_ID(current_value + increment)
+   WHERE seq_no = PREFIX_NO;
+   
+   RETURN CONCAT(PREFIX_NO,LPAD(CAST(LAST_INSERT_ID() AS CHAR),10,0));
+END;
+
+--还是依然能够运行的
+SELECT whcenter."fn_nextval"('AB');
+-- 每次返回结果按定义递减
+fn_nextval  |
+------------+
+AB9999997130|
+```
+后面又为测存储过程改造了几个函数，总体问题不大，稍微调整创建语法。
+
+#### 存储过程迁移
+项目里有一些单据审核等，为控制多表事务更新、库存更新、状态检查等实时性要求较高的功能，封装了存储过程，迁移时选择了一个比较有代表性的入库审核过程，难度不小，总结以下几点：
+
+1.创建语法区别较大，kingbase主要是遵循plpgsql的基本语法，mysql比较特殊；
+2.变量定义方式不同；
+如原定义每个变量都要用DECLARE定义，plpgsql需要在过程体前统一定义。
+
+3.临时表创建语法不同；
+plpgsql有更好的创建语法
+```CREATE TEMP TABLE tm_instocknum ON COMMIT DROP AS ...```
+4.错误信息抓取，区别较大，整个过程框架需重新制作模板重新写；
+
+```sql
+--mysql在更新前定义
+DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+  BEGIN GET DIAGNOSTICS CONDITION 1
+  	sys_ErrCode=RETURNED_SQLSTATE,sys_ErrMessage=MESSAGE_TEXT;
+  END;
+
+--plpgsql在BEGIN后定义
+EXCEPTION
+    WHEN OTHERS THEN
+        GET STACKED DIAGNOSTICS
+            sys_errcode    = RETURNED_SQLSTATE,
+            sys_errmessage = MESSAGE_TEXT;
+
+        p_result    := -1;
+        p_errmessage := sys_errmessage;
+```
+5.IF EXISTS判断语句不同。
+
+总之就是需要改动地方较多，如果正式使用都需要测试一遍。
+更新下小伙伴推荐了一个自动转换的网站，能修改大部分逻辑了，稍加调整就能创建存储过程了。
+
+#### 代码连接数据库
+
+除了前面介绍的使用pymysql和mysql-connector-python连接KingbaseES MySQL兼容版数据库外，KingbaseES官方推荐使用ksycopg2库进行连接，这是基于PostgreSQL的psycopg2库开发的专用驱动。
+
+##### 使用ksycopg2连接
+
+```python
+# 使用ksycopg2连接KingbaseES数据库
+import ksycopg2
+import pandas as pd
+
+try:
+    # 建立数据库连接
+    conn = ksycopg2.connect(
+        database="whcenter",         # 数据库名
+        user="whcenter",            # 用户名
+        password="password",        # 密码
+        host="192.168.1.100",      # KingbaseES服务器IP
+        port="5432"                # KingbaseES端口，默认5432
+    )
+    
+    # 创建游标对象
+    cursor = conn.cursor()
+    
+    # 执行SQL查询
+    cursor.execute("SELECT * FROM wh_inventoryturnover LIMIT 5")
+    
+    # 获取查询结果
+    results = cursor.fetchall()
+    
+    # 获取列名
+    column_names = [desc[0] for desc in cursor.description]
+    
+    # 使用pandas展示结果
+    df = pd.DataFrame(results, columns=column_names)
+    print("查询结果：")
+    print(df)
+    
+    # 关闭游标和连接
+    cursor.close()
+    conn.close()
+    print("连接已关闭")
+    
+except Exception as e:
+    print(f"连接或查询出错：{e}")
+```
+
+查询结果
+Empty DataFrame
+Columns: [Id, xxx ...]
+Index: []
+连接已关闭
+
+##### 使用ksycopg2执行复杂操作
+
+```python
+# 使用ksycopg2执行复杂操作
+import ksycopg2
+import datetime
+
+try:
+    # 建立数据库连接
+    conn = ksycopg2.connect(
+        database="whcenter",
+        user="whcenter",
+        password="password",
+        host="192.168.1.100",
+        port="5432"
+    )
+    
+    # 创建游标对象
+    cursor = conn.cursor()
+    
+    # 创建测试表
+    cursor.execute('DROP TABLE IF EXISTS test_kingbase')
+    cursor.execute('CREATE TABLE test_kingbase(id INTEGER, name TEXT, create_time TIMESTAMP)')
+    
+    # 插入数据
+    cursor.execute("INSERT INTO test_kingbase VALUES(%s, %s, %s)", 
+                  (1, "测试数据1", datetime.datetime.now()))
+    cursor.execute("INSERT INTO test_kingbase VALUES(%s, %s, %s)", 
+                  (2, "测试数据2", datetime.datetime.now()))
+    
+    # 提交事务
+    conn.commit()
+    
+    # 查询数据
+    cursor.execute("SELECT * FROM test_kingbase")
+    rows = cursor.fetchall()
+    
+    # 打印结果
+    print("查询结果：")
+    for row in rows:
+        print(f"ID: {row[0]}, 名称: {row[1]}, 创建时间: {row[2]}")
+    
+    # 关闭游标和连接
+    cursor.close()
+    conn.close()
+    print("连接已关闭")
+    
+except Exception as e:
+    print(f"操作出错：{e}")
+```
+
+查询结果：
+ID: 1, 名称: 测试数据1, 创建时间: 2025-08-01 08:47:11
+ID: 2, 名称: 测试数据2, 创建时间: 2025-08-01 08:47:11
+连接已关闭
 
 ## 总结
 
