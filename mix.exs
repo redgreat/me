@@ -28,7 +28,7 @@ defmodule CunweiWong.MixProject do
       {:xml_builder, "~> 2.3.0"},
       {:yaml_elixir, "~> 2.11.0"},
       {:html_sanitize_ex, "~> 1.4.3"},
-      {:tailwind, "~> 0.3.1"},
+      {:tailwind, "~> 0.4.1"},
       {:bandit, "~> 1.6.4"},
       {:exsync, "~> 0.4.1"},
       {:credo, "~> 1.7.8"}
