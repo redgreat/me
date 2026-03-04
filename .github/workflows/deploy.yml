@@ -20,9 +20,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up Elixir
-        uses: erlef/setup-beam@5304e04ea2b355f03681464e683d92e3b2f18451
+        uses: erlef/setup-beam@3580539ceec3dc05b0ed51e9e10b08eb7a7c2bb4
         with:
           elixir-version: '1.17.3'
           otp-version: '27.1'
@@ -40,7 +40,7 @@ jobs:
         run: mix credo
 
       - name: Publish to Vercel
-        uses: amondnet/vercel-action@v25.2.0
+        uses: amondnet/vercel-action@v41.1.4
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           working-directory: output
