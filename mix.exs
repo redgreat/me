@@ -26,7 +26,7 @@ defmodule CunweiWong.MixProject do
       {:makeup_html, "~> 0.2.0"},
       {:phoenix_live_view, "~> 1.1.16"},
       {:xml_builder, "~> 2.3.0"},
-      {:yaml_elixir, "~> 2.11.0"},
+      {:yaml_elixir, "~> 2.12.0"},
       {:html_sanitize_ex, "~> 1.4.3"},
       {:tailwind, "~> 0.3.1"},
       {:bandit, "~> 1.6.4"},
