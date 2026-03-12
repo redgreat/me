@@ -1,3 +1,9 @@
+const connectionString = process.env.NEON_DATABASE_URL;
+
+if (connectionString) {
+  process.env.POSTGRES_URL = connectionString;
+}
+
 const { sql } = require('@vercel/postgres');
 
 module.exports = async (req, res) => {
@@ -7,6 +13,20 @@ module.exports = async (req, res) => {
     res.statusCode = 400;
     res.setHeader('content-type', 'application/json');
     res.end(JSON.stringify({ error: 'missing date' }));
+    return;
+  }
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    res.statusCode = 400;
+    res.setHeader('content-type', 'application/json');
+    res.end(JSON.stringify({ error: 'invalid date format' }));
+    return;
+  }
+
+  if (!process.env.POSTGRES_URL) {
+    res.statusCode = 500;
+    res.setHeader('content-type', 'application/json');
+    res.end(JSON.stringify({ error: 'database not configured' }));
     return;
   }
 
