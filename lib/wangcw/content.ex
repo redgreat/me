@@ -7,7 +7,7 @@ defmodule CunweiWong.Content do
     build: Page,
     from: "./pages/**/*.md",
     as: :pages,
-    highlighters: [:makeup_elixir, :makeup_js, :makeup_html],
+    highlighters: [:makeup_elixir, :makeup_html],
     earmark_options: [breaks: true]
 
   def site_title() do

@@ -22,7 +22,6 @@ defmodule CunweiWong.MixProject do
     [
       {:nimble_publisher, "~> 1.1.0"},
       {:makeup_elixir, "~> 1.0.1"},
-      {:makeup_js, "~> 0.1.0"},
       {:makeup_html, "~> 0.2.0"},
       {:phoenix_live_view, "~> 1.1.16"},
       {:xml_builder, "~> 2.4.0"},

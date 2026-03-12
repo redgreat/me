@@ -95,10 +95,11 @@ SET GLOBAL group_replication_unreachable_majority_timeout = 30;
 ### 3.3 性能优化建议
 1. **网络优化**：使用专用网络进行MGR通信
 2. **参数调优**：
-```ini
-group_replication_compression_threshold = 1000000
-group_replication_flow_control_mode = "QUOTA"
-```
+
+   ```ini
+   group_replication_compression_threshold = 1000000
+   group_replication_flow_control_mode = "QUOTA"
+   ```
 
 ## 四、监控与维护
 

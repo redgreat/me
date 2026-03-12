@@ -732,21 +732,23 @@ echo "*/5 * * * * /usr/local/bin/redis_monitor.sh" | crontab -
 #### 5.8.3 企业微信配置说明
 1. **修改Webhook Key**：将脚本中的`WX_KEY`替换为你的实际企业微信群机器人key
 2. **测试消息推送**：
-   ```bash
-   # 测试监控脚本
-   /usr/local/bin/redis_monitor.sh
-   
-   # 测试故障转移脚本
-   /usr/local/bin/redis_failover.sh
-   ```
+
+    ```bash
+    # 测试监控脚本
+    /usr/local/bin/redis_monitor.sh
+
+    # 测试故障转移脚本
+    /usr/local/bin/redis_failover.sh
+    ```
 3. **12小时去重功能**：
    - 相同类型的告警12小时内只发送一次
    - 状态文件保存在`/tmp/redis_monitor/alert_state`
    - 支持4种告警类型独立去重：master_down、both_down、slave_down、sync_error
 4. **手动重置告警**：如需立即重新发送告警，可删除状态文件
-   ```bash
-   rm -f /tmp/redis_monitor/alert_state
-   ```
+
+    ```bash
+    rm -f /tmp/redis_monitor/alert_state
+    ```
 5. **脚本位置**：监控脚本已放置在`script/redis_monitor.sh`和`script/redis_failover.sh`，可直接使用
 
 ### 5.9 注意事项
