@@ -5,7 +5,7 @@ defmodule CunweiWong.MixProject do
     [
       app: :wangcw,
       version: "0.1.0",
-      elixir: "~> 1.14",
+      elixir: "~> 1.19",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]

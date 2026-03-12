@@ -59,13 +59,15 @@ defmodule CunweiWong.Render do
       |> Enum.group_by(& &1.date)
       |> Enum.sort_by(fn {date, _posts} -> date end, {:desc, Date})
 
+    assigns = assign(assigns, :grouped_posts, grouped_posts)
+
     ~H"""
     <.layout
       title={Content.site_title()}
       route="/"
     >
       <div class="posts">
-        <%= for {date, posts} <- grouped_posts do %>
+        <%= for {date, posts} <- @grouped_posts do %>
           <div class="post-date"><%= format_post_date(date) %></div>
           <%= for post <- posts do %>
             <a href={post.route} class="post-link alternate">
@@ -101,6 +103,8 @@ defmodule CunweiWong.Render do
       |> Enum.group_by(& &1.date)
       |> Enum.sort_by(fn {date, _posts} -> date end, {:desc, Date})
 
+    assigns = assign(assigns, :grouped_posts, grouped_posts)
+
     ~H"""
     <.layout
       title={Content.site_title()}
@@ -108,7 +112,7 @@ defmodule CunweiWong.Render do
     >
       <h1>归档</h1>
       <div class="posts">
-        <%= for {date, posts} <- grouped_posts do %>
+        <%= for {date, posts} <- @grouped_posts do %>
           <div class="post-date"><%= format_post_date(date) %></div>
           <%= for post <- posts do %>
             <a href={post.route} class="post-link alternate">

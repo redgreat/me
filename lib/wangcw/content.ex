@@ -52,7 +52,7 @@ defmodule CunweiWong.Content do
   def all_routes do
     html_dir = Path.join(File.cwd!(), "pages/routes/")
 
-    html_files =
+    if File.exists?(html_dir) do
       html_dir
       |> File.ls!()
       |> Enum.filter(&String.ends_with?(&1, ".html"))
@@ -62,8 +62,9 @@ defmodule CunweiWong.Content do
           route: "/routes/#{file}"
         }
       end)
-
-    html_files
+    else
+      []
+    end
   end
 
   def about_page do
