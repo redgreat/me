@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
   try {
     const { rows } = await sql`
       select lat, lng, ts
-      from location_points
+      from public.location_points
       where ts >= ${date}::date
         and ts < (${date}::date + interval '1 day')
       order by ts asc
