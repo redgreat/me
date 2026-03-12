@@ -8,6 +8,7 @@ const { sql } = require('@vercel/postgres');
 
 module.exports = async (req, res) => {
   const date = (req.query?.date || '').trim();
+  const requestId = req.headers['x-vercel-id'] || req.headers['x-request-id'];
 
   if (!date) {
     res.statusCode = 400;
@@ -26,7 +27,7 @@ module.exports = async (req, res) => {
   if (!process.env.POSTGRES_URL) {
     res.statusCode = 500;
     res.setHeader('content-type', 'application/json');
-    res.end(JSON.stringify({ error: 'database not configured' }));
+    res.end(JSON.stringify({ error: 'database not configured', requestId }));
     return;
   }
 
@@ -43,8 +44,16 @@ module.exports = async (req, res) => {
     res.setHeader('content-type', 'application/json');
     res.end(JSON.stringify({ date, points: rows }));
   } catch (error) {
+    console.error('locations query failed', {
+      requestId,
+      date,
+      message: error?.message,
+      code: error?.code,
+      detail: error?.detail,
+      hint: error?.hint
+    });
     res.statusCode = 500;
     res.setHeader('content-type', 'application/json');
-    res.end(JSON.stringify({ error: 'query failed' }));
+    res.end(JSON.stringify({ error: 'query failed', requestId }));
   }
 };
