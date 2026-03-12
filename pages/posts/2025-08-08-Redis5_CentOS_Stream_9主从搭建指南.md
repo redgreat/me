@@ -77,8 +77,9 @@ make && make install
 ```bash
 # 编辑配置文件
 vim /etc/redis/redis_master.conf
+```
 
-```bash
+```ini
 # 基本配置
 bind 0.0.0.0
 port 6379
