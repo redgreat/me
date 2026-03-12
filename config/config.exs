@@ -11,8 +11,3 @@ config :tailwind,
     ),
     cd: Path.expand("../assets", __DIR__)
   ]
-
-config :exsync,
-  src_monitor: true,
-  extra_extensions: [".md", ".js", ".css"],
-  addition_dirs: ["/pages", "/assets"]

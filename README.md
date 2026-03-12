@@ -24,7 +24,6 @@
 - 入口：`/routes/`
 - 地图：OpenStreetMap
 - 数据来源：默认请求 `/api/locations?date=YYYY-MM-DD`
-- 备用数据：`/routes/data/YYYY-MM-DD.json`
 
 ## 数据库迁移
 

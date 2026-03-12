@@ -59,7 +59,7 @@ defmodule CunweiWong.Render do
       |> Enum.group_by(& &1.date)
       |> Enum.sort_by(fn {date, _posts} -> date end, {:desc, Date})
 
-    assigns = assign(assigns, :grouped_posts, grouped_posts)
+    assigns = Map.put(assigns, :grouped_posts, grouped_posts)
 
     ~H"""
     <.layout
@@ -103,7 +103,7 @@ defmodule CunweiWong.Render do
       |> Enum.group_by(& &1.date)
       |> Enum.sort_by(fn {date, _posts} -> date end, {:desc, Date})
 
-    assigns = assign(assigns, :grouped_posts, grouped_posts)
+    assigns = Map.put(assigns, :grouped_posts, grouped_posts)
 
     ~H"""
     <.layout
@@ -148,9 +148,10 @@ defmodule CunweiWong.Render do
     >
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
       <div class="route-page" id="route-app" data-endpoint="/api/locations">
-        <div class="route-header">
+      <div class="route-header">
           <h1>轨迹</h1>
-          <p>展示某一天的定位点轨迹，地图底图来自 OpenStreetMap。</p>
+        <p>展示某一天的定位点轨迹，地图底图来自 OpenStreetMap。</p>
+        <p class="route-tip" id="route-tip">请输入日期后加载定位数据。</p>
         </div>
         <div class="route-controls">
           <label for="route-date">日期</label>
@@ -211,6 +212,13 @@ defmodule CunweiWong.Render do
           statusEl.dataset.tone = tone || '';
         }
 
+        function setTip(text, tone) {
+          const tipEl = document.getElementById('route-tip');
+          if (!tipEl) return;
+          tipEl.textContent = text || '';
+          tipEl.dataset.tone = tone || '';
+        }
+
         function formatTime(value) {
           if (!value) return '';
           const date = new Date(value);
@@ -253,6 +261,7 @@ defmodule CunweiWong.Render do
 
           if (latlngs.length === 0) {
             setStatus('没有可用的定位点', 'empty');
+            setTip('该日期没有可用数据。', 'empty');
             countEl.textContent = '0';
             rangeEl.textContent = '-';
             return;
@@ -276,14 +285,14 @@ defmodule CunweiWong.Render do
           const endTime = formatTime(points[points.length - 1]?.ts || points[points.length - 1]?.time || points[points.length - 1]?.timestamp);
           rangeEl.textContent = startTime && endTime ? `${startTime} - ${endTime}` : '-';
           setStatus('加载成功', 'success');
+          setTip('数据来自后端接口。', 'success');
         }
 
         async function fetchPoints(date) {
-          const primaryUrl = endpoint ? `${endpoint}?date=${date}` : `/routes/data/${date}.json`;
-          let response = await fetch(primaryUrl);
-          if (!response.ok && endpoint) {
-            response = await fetch(`/routes/data/${date}.json`);
+          if (!endpoint) {
+            throw new Error('missing-endpoint');
           }
+          const response = await fetch(`${endpoint}?date=${date}`);
           if (!response.ok) {
             throw new Error(`status:${response.status}`);
           }
@@ -293,11 +302,13 @@ defmodule CunweiWong.Render do
         async function loadDate(date) {
           if (!date) return;
           setStatus('加载中...', 'loading');
+          setTip('正在从后端获取数据...', 'loading');
           try {
             const data = await fetchPoints(date);
             renderTrack(normalizePoints(data));
           } catch (error) {
             setStatus('加载失败', 'error');
+            setTip('接口不可用或数据为空，请稍后重试。', 'error');
             countEl.textContent = '-';
             rangeEl.textContent = '-';
           }
@@ -315,7 +326,12 @@ defmodule CunweiWong.Render do
           loadButton.click();
         });
 
-        loadDate(initialDate);
+        if (!endpoint) {
+          setStatus('接口未配置', 'error');
+          setTip('当前未配置后端接口，无法加载定位数据。', 'error');
+        } else {
+          loadDate(initialDate);
+        }
       </script>
     </.layout>
     """

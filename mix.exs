@@ -21,6 +21,7 @@ defmodule CunweiWong.MixProject do
   defp deps do
     [
       {:nimble_publisher, "~> 1.1.0"},
+      {:earmark, "~> 1.4.48"},
       {:makeup_elixir, "~> 1.0.1"},
       {:makeup_html, "~> 0.2.0"},
       {:phoenix_live_view, "~> 1.1.16"},
@@ -29,7 +30,6 @@ defmodule CunweiWong.MixProject do
       {:html_sanitize_ex, "~> 1.4.3"},
       {:tailwind, "~> 0.4.1"},
       {:bandit, "~> 1.10.3"},
-      {:exsync, "~> 0.4.1"},
       {:credo, "~> 1.7.8"}
     ]
   end
