@@ -5,7 +5,9 @@
 ## 结构
 
 - `pages/posts` 发布文章
-- `pages/routs` 轨迹网页
+- `pages/routes` 轨迹网页
+- `migrations` 数据库迁移脚本
+- `api` Vercel Functions 接口
 - `assets/` 图片等多媒体资源
 - `lib/` 生成html代码
 - `output/` 静态网页
@@ -16,6 +18,28 @@
 - `mix deps.get` 安装依赖
 - `mix compile` 编译
 - `iex -S mix` 本地运行
+
+## 轨迹页面
+
+- 入口：`/routes/`
+- 地图：OpenStreetMap
+- 数据来源：默认请求 `/api/locations?date=YYYY-MM-DD`
+- 备用数据：`/routes/data/YYYY-MM-DD.json`
+
+## 数据库迁移
+
+- 迁移脚本位于 `migrations/`
+- 在生产环境通过 GitHub Actions 执行，仅 main 分支生效
+- 需要配置 GitHub Secrets：`NEON_DATABASE_URL`
+
+## 部署
+
+- 使用 Vercel 部署
+- 构建由 `vercel.json` 驱动，产物输出到 `output/`
+
+## 环境变量
+
+- `NEON_DATABASE_URL`：生产数据库连接串，用于 GitHub Actions 迁移
 
 
 ## Acknowledgement

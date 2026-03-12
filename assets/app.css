@@ -34,13 +34,15 @@ body {
   max-width: 60%;
   margin: auto;
   padding: 2% 5%;
-  line-height: 120%;
+  line-height: 140%;
+  background: #f6f7fb;
+  color: #1f2937;
 }
 
 h1 {
-  color: black;
+  color: #111827;
   font-size: 210%;
-  line-height: 110%;
+  line-height: 120%;
 }
 
 h2 {
@@ -65,12 +67,12 @@ h3 {
 p {
   margin: 3% 0;
   text-wrap: balance;
+  color: #374151;
 }
 
 a {
   text-decoration: none;
-  /* link color must be at least 3:1 to text color */
-  color: #4343D6;
+  color: #4f46e5;
 }
 
 a:focus, a:hover {
@@ -106,12 +108,14 @@ ul.posts > li, ul.hide-list > li {
 header {
   width: 100%;
   font-size: 120%;
+  margin-bottom: 3%;
 }
 
 footer {
   margin-top: 5%;
   text-align: center;
   font-size: 80%;
+  color: #6b7280;
 }
 
 hr {
@@ -121,11 +125,14 @@ hr {
   width: 80%;
   border: none;
   outline: none;
-  background: grey;
+  background: #e5e7eb;
 }
 
 blockquote {
   font-style: italic;
+  border-left: 3px solid #e5e7eb;
+  padding-left: 14px;
+  color: #4b5563;
 }
 
 .post {
@@ -133,11 +140,13 @@ blockquote {
 }
 
 .post-header {
-  margin-bottom: 1%;
+  margin-bottom: 3%;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .post-header a {
-  color: black;
+  color: #111827;
 }
 
 .post-header h1 {
@@ -146,10 +155,21 @@ blockquote {
 
 .post-content > p:first-child {
   font-style: italic;
+  color: #4b5563;
+}
+
+.post-content {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
 }
 
 .post-content img {
   max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
 }
 
 .post-date {
@@ -157,16 +177,39 @@ blockquote {
   font-size: 80%;
   line-height: 150%;
   font-weight: bold;
+  color: #6b7280;
 }
 
 .post-link {
-  color: black;
-  font-size: 150%;
+  color: #111827;
+  font-size: 130%;
+  display: block;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.post-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
 }
 
 .post-title {
   text-wrap: balance;
   margin-bottom: 1%;
+}
+
+.posts {
+  display: grid;
+  gap: 16px;
+}
+
+.post-meta {
+  color: #6b7280;
+  font-size: 85%;
 }
 
 .archive-post {
@@ -197,6 +240,78 @@ blockquote {
 
 .left {
   text-align: left;
+}
+
+.route-page {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding: 0 5vw 4vw 5vw;
+  box-sizing: border-box;
+}
+
+.route-header h1 {
+  margin-top: 2%;
+}
+
+.route-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.route-controls input {
+  padding: 6px 10px;
+  font-size: 100%;
+}
+
+.route-controls button {
+  padding: 6px 12px;
+  font-size: 100%;
+  border-radius: 6px;
+  border: 1px solid #d0d0d0;
+  background: #f8f8f8;
+  cursor: pointer;
+}
+
+.route-status {
+  font-size: 90%;
+  color: #555;
+}
+
+.route-stats {
+  display: flex;
+  gap: 24px;
+  margin: 8px 0 16px 0;
+  font-size: 90%;
+}
+
+.route-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.route-stat-label {
+  color: #666;
+}
+
+.route-map {
+  width: 100%;
+  height: 70vh;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+}
+
+@media (max-width: 900px) {
+  .route-page {
+    padding: 0 4vw 6vw 4vw;
+  }
+
+  .route-map {
+    height: 60vh;
+  }
 }
 
 .right {

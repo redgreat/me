@@ -142,19 +142,34 @@ defmodule CunweiWong.Render do
       title={Content.site_title()}
       route="/routes/"
     >
-      <p><em>日常轨迹</em></p>
-      <div class="posts">
-      <%= for route <- assigns.routes do %>
-        <a href={route.route} class="route-link">
-          <div class="routes-post">
-            <div class="route-title"><%= route.title %></div>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+      <div class="route-page" id="route-app" data-endpoint="/api/locations">
+        <div class="route-header">
+          <h1>轨迹</h1>
+          <p>展示某一天的定位点轨迹，地图底图来自 OpenStreetMap。</p>
+        </div>
+        <div class="route-controls">
+          <label for="route-date">日期</label>
+          <input type="date" id="route-date" />
+          <button id="route-load">加载</button>
+          <span class="route-status" id="route-status"></span>
+        </div>
+        <div class="route-stats">
+          <div class="route-stat">
+            <span class="route-stat-label">点数</span>
+            <span class="route-stat-value" id="route-count">-</span>
           </div>
-        </a>
-      <% end %>
-    </div>
+          <div class="route-stat">
+            <span class="route-stat-label">时间范围</span>
+            <span class="route-stat-value" id="route-range">-</span>
+          </div>
+        </div>
+        <div id="route-map" class="route-map"></div>
+      </div>
       <footer>
         <p id="footer-cr"></p>
       </footer>
+      <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
       <script>
         document.addEventListener('DOMContentLoaded', function() {
           let currentYear = new Date().getFullYear();
@@ -164,6 +179,139 @@ defmodule CunweiWong.Render do
           let vlink = '<a href="https://vercel.com" target="_blank">Vercel</a>';
           footerYear.innerHTML = "Generate Use " + elink + " Publish at " + vlink + "<br>Copyright © " + wlink + " 2020-" + currentYear + " All Rights Reserved";
         });
+      </script>
+      <script>
+        const routeApp = document.getElementById('route-app');
+        const dateInput = document.getElementById('route-date');
+        const loadButton = document.getElementById('route-load');
+        const statusEl = document.getElementById('route-status');
+        const countEl = document.getElementById('route-count');
+        const rangeEl = document.getElementById('route-range');
+        const endpoint = routeApp.dataset.endpoint || '';
+        let map;
+        let trackLayer;
+        let startMarker;
+        let endMarker;
+
+        const now = new Date();
+        const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+          .toISOString()
+          .slice(0, 10);
+
+        const params = new URLSearchParams(window.location.search);
+        const initialDate = params.get('date') || localDate;
+        dateInput.value = initialDate;
+
+        function setStatus(text, tone) {
+          statusEl.textContent = text || '';
+          statusEl.dataset.tone = tone || '';
+        }
+
+        function formatTime(value) {
+          if (!value) return '';
+          const date = new Date(value);
+          if (Number.isNaN(date.getTime())) return '';
+          const pad = (num) => String(num).padStart(2, '0');
+          return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+        }
+
+        function normalizePoints(data) {
+          if (Array.isArray(data)) return data;
+          if (data && Array.isArray(data.points)) return data.points;
+          return [];
+        }
+
+        function toLatLng(point) {
+          const lat = point.lat ?? point.latitude;
+          const lng = point.lng ?? point.lon ?? point.longitude;
+          const latNumber = Number(lat);
+          const lngNumber = Number(lng);
+          if (!Number.isFinite(latNumber) || !Number.isFinite(lngNumber)) return null;
+          return [latNumber, lngNumber];
+        }
+
+        function ensureMap(center) {
+          if (!map) {
+            map = L.map('route-map', { preferCanvas: true });
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              maxZoom: 19,
+              attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+            L.control.scale().addTo(map);
+          }
+          map.setView(center, 12);
+        }
+
+        function renderTrack(points) {
+          const latlngs = points
+            .map(toLatLng)
+            .filter((item) => item);
+
+          if (latlngs.length === 0) {
+            setStatus('没有可用的定位点', 'empty');
+            countEl.textContent = '0';
+            rangeEl.textContent = '-';
+            return;
+          }
+
+          ensureMap(latlngs[0]);
+
+          if (trackLayer) map.removeLayer(trackLayer);
+          if (startMarker) map.removeLayer(startMarker);
+          if (endMarker) map.removeLayer(endMarker);
+
+          trackLayer = L.polyline(latlngs, { color: '#2f4bff', weight: 3 });
+          trackLayer.addTo(map);
+          map.fitBounds(trackLayer.getBounds(), { padding: [20, 20] });
+
+          startMarker = L.circleMarker(latlngs[0], { radius: 5, color: '#10b981' }).addTo(map);
+          endMarker = L.circleMarker(latlngs[latlngs.length - 1], { radius: 5, color: '#ef4444' }).addTo(map);
+
+          countEl.textContent = String(latlngs.length);
+          const startTime = formatTime(points[0]?.ts || points[0]?.time || points[0]?.timestamp);
+          const endTime = formatTime(points[points.length - 1]?.ts || points[points.length - 1]?.time || points[points.length - 1]?.timestamp);
+          rangeEl.textContent = startTime && endTime ? `${startTime} - ${endTime}` : '-';
+          setStatus('加载成功', 'success');
+        }
+
+        async function fetchPoints(date) {
+          const primaryUrl = endpoint ? `${endpoint}?date=${date}` : `/routes/data/${date}.json`;
+          let response = await fetch(primaryUrl);
+          if (!response.ok && endpoint) {
+            response = await fetch(`/routes/data/${date}.json`);
+          }
+          if (!response.ok) {
+            throw new Error(`status:${response.status}`);
+          }
+          return response.json();
+        }
+
+        async function loadDate(date) {
+          if (!date) return;
+          setStatus('加载中...', 'loading');
+          try {
+            const data = await fetchPoints(date);
+            renderTrack(normalizePoints(data));
+          } catch (error) {
+            setStatus('加载失败', 'error');
+            countEl.textContent = '-';
+            rangeEl.textContent = '-';
+          }
+        }
+
+        loadButton.addEventListener('click', function() {
+          const date = dateInput.value;
+          const url = new URL(window.location.href);
+          url.searchParams.set('date', date);
+          window.history.replaceState({}, '', url.toString());
+          loadDate(date);
+        });
+
+        dateInput.addEventListener('change', function() {
+          loadButton.click();
+        });
+
+        loadDate(initialDate);
       </script>
     </.layout>
     """

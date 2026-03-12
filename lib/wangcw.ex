@@ -65,15 +65,15 @@ defmodule CunweiWong do
   end
 
   defp route_file do
-    src_dir = Path.join(File.cwd!(), "pages/routes")
-    tar_dir = Path.join(@output_dir, "routes")
+    src_dir = Path.join(File.cwd!(), "pages/routes/data")
+    tar_dir = Path.join(@output_dir, "routes/data")
 
     if File.exists?(src_dir) do
       File.mkdir_p!(tar_dir)
       File.cp_r!(src_dir, tar_dir)
-      Logger.info("Copied all HTML files to #{tar_dir}")
+      Logger.info("Copied route data files to #{tar_dir}")
     else
-      Logger.warning("HTML source directory #{src_dir} does not exist. Skipping copy.")
+      Logger.warning("Route data directory #{src_dir} does not exist. Skipping copy.")
     end
   end
 

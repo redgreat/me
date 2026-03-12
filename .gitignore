@@ -29,3 +29,5 @@ personal_website-*.tar
 /output/
 
 /.elixir_ls/
+
+.DS_Store

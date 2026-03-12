@@ -39,13 +39,17 @@ jobs:
       - name: Run credo
         run: mix credo
 
+      - name: Run database migrations
+        if: github.ref == 'refs/heads/main'
+        env:
+          NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+        run: psql "$NEON_DATABASE_URL" -f migrations/001_create_location_points.sql
+
       - name: Publish to Vercel
         uses: amondnet/vercel-action@v41.1.4
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          working-directory: output
           vercel-args: '--prod'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-

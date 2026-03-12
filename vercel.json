@@ -1,0 +1,4 @@
+{
+  "buildCommand": "mix deps.get && mix compile && mix run -e \"CunweiWong.build_all()\"",
+  "outputDirectory": "output"
+}
