@@ -1,10 +1,11 @@
 module.exports = {
+  darkMode: 'media',
   content: [
-    "./**/*.js",
-    "../lib/wangcw.ex",
+    "./js/**/*.js",
+    "../lib/**/*.ex",
+    "../lib/**/*.heex",
   ],
   plugins: [
     require("@tailwindcss/typography"),
   ]
 };
-

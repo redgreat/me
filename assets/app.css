@@ -1,5 +1,8 @@
-/* FONT */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* FONT */
 @font-face {
   font-family: 'Fantasque Sans Mono';
   font-display: swap;
@@ -29,407 +32,55 @@
   src: url('/fonts/FantasqueSansMono-BoldItalic.woff2') format('woff2');
 }
 
-body {
-  font-family: 'Fantasque Sans Mono', Courier, sans-serif;
-  max-width: 60%;
-  margin: auto;
-  padding: 2% 5%;
-  line-height: 140%;
-  background: #f6f7fb;
-  color: #1f2937;
-}
-
-h1 {
-  color: #111827;
-  font-size: 210%;
-  line-height: 120%;
-}
-
-h2 {
-  margin: 12% 0 0 0;
-  font-size: 160%;
-  line-height: 120%;
-  text-align: left;
-}
-.posts h2 {
-  margin-top: 1%;
-  margin-bottom: 2%;
-}
-
-h3 {
-  margin-top: 7%;
-  margin-bottom: 1%;
-  font-size: 140%;
-  line-height: 120%;
-  text-align: left;
-}
-
-p {
-  margin: 3% 0;
-  text-wrap: balance;
-  color: #374151;
-}
-
-a {
-  text-decoration: none;
-  color: #4f46e5;
-}
-
-a:focus, a:hover {
-  outline: none;
-  text-decoration: underline;
-}
-
-a.alternate:focus,
-a.alternate:hover,
-a.alternate:focus > *,
-a.alternate:hover > * {
-  text-decoration: none;
-}
-
-small {
-  font-size: 70%;
-}
-
-ol, ul {
-  padding-left: 5%;
-}
-
-li {
-  padding: 3% 0;
-}
-ul > li {
-  list-style: circle;
-}
-ul.posts > li, ul.hide-list > li {
-  padding: 1% 0;
-}
-
-header {
-  width: 100%;
-  font-size: 120%;
-  margin-bottom: 3%;
-}
-
-footer {
-  margin-top: 5%;
-  text-align: center;
-  font-size: 80%;
-  color: #6b7280;
-}
-
-hr {
-  margin-left: 0; 
-  margin-top: 10%;
-  height: 1px;
-  width: 80%;
-  border: none;
-  outline: none;
-  background: #e5e7eb;
-}
-
-blockquote {
-  font-style: italic;
-  border-left: 3px solid #e5e7eb;
-  padding-left: 14px;
-  color: #4b5563;
-}
-
-.post {
-  margin: 3% 0;
-}
-
-.post-header {
-  margin-bottom: 3%;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.post-header a {
-  color: #111827;
-}
-
-.post-header h1 {
-  margin-top: 1%;
-}
-
-.post-content > p:first-child {
-  font-style: italic;
-  color: #4b5563;
-}
-
-.post-content {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 20px 24px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-}
-
-.post-content img {
-  max-width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
-}
-
-.post-date {
-  margin: 2% 0;
-  font-size: 80%;
-  line-height: 150%;
-  font-weight: bold;
-  color: #6b7280;
-}
-
-.post-link {
-  color: #111827;
-  font-size: 130%;
-  display: block;
-  padding: 16px 18px;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.post-link:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
-}
-
-.post-title {
-  text-wrap: balance;
-  margin-bottom: 1%;
-}
-
-.posts {
-  display: grid;
-  gap: 16px;
-}
-
-.post-meta {
-  color: #6b7280;
-  font-size: 85%;
-}
-
-.archive-post {
-  margin-top: 3%;
-}
-
-.archive-date {
-  margin: 2% 0;
-  font-size: 80%;
-  line-height: 150%;
-  font-weight: bold;
-}
-
-.archive-title {
-  text-wrap: balance;
-  margin-bottom: 1%;
-}
-
-.routes-post {
-  margin-top: 3%;
-}
-
-.posts-footer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-}
-
-.left {
-  text-align: left;
+@layer base {
+  body {
+    font-family: 'Fantasque Sans Mono', Courier, sans-serif;
+  }
 }
 
 .route-page {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  padding: 0 5vw 4vw 5vw;
-  box-sizing: border-box;
+  @apply px-4 sm:px-6 lg:px-8 py-8 w-full max-w-5xl mx-auto;
 }
-
-.route-header h1 {
-  margin-top: 2%;
-}
-
 .route-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin: 16px 0;
+  @apply flex items-center gap-3 flex-wrap my-4;
 }
-
 .route-controls input {
-  padding: 6px 10px;
-  font-size: 100%;
+  @apply px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100;
 }
-
 .route-controls button {
-  padding: 6px 12px;
-  font-size: 100%;
-  border-radius: 6px;
-  border: 1px solid #d0d0d0;
-  background: #f8f8f8;
-  cursor: pointer;
+  @apply px-4 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 cursor-pointer transition-colors;
 }
-
 .route-status {
-  font-size: 90%;
-  color: #555;
+  @apply text-sm text-gray-500 dark:text-gray-400;
 }
-
 .route-stats {
-  display: flex;
-  gap: 24px;
-  margin: 8px 0 16px 0;
-  font-size: 90%;
+  @apply flex gap-6 my-4 text-sm;
 }
-
 .route-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  @apply flex flex-col gap-1;
 }
-
 .route-stat-label {
-  color: #666;
+  @apply text-gray-500 dark:text-gray-400;
 }
-
+.route-stat-value {
+  @apply font-semibold text-gray-900 dark:text-gray-100;
+}
 .route-map {
-  width: 100%;
-  height: 70vh;
-  border: 1px solid #e5e5e5;
-  border-radius: 10px;
+  @apply w-full h-[60vh] sm:h-[70vh] border border-gray-200 dark:border-gray-700 rounded-xl z-0;
 }
-
-@media (max-width: 900px) {
-  .route-page {
-    padding: 0 4vw 6vw 4vw;
-  }
-
-  .route-map {
-    height: 60vh;
-  }
-}
-
-.right {
-  text-align: right;
-}
-
-.footer {
-  position: absolute;
-  bottom: 12px;
-}
-
-.post-footer {
-  margin: 24% auto;
-  text-align: center;
-  font-style: italic;
-  font-size: 80%;
-  line-height: 170%;
-}
-
-.post-footer a {
-  /* accessability issue if link is not marked as such here */
-  text-decoration: underline;
-}
-
-.author {
-  display: none;
-}
-
-.avatar {
-  border-radius: 50%;
-}
-
-header a {
-  font-style: italic;
-  /* padding might seem funny, but this is to avoid ux issues on mobile. buttons must be big enough */
-  padding: 4% 4% 4% 0;
-  display: inline-block;
-}
-
-pre {
-  border-width: 1px;
-  border-color: #E7E7E7;
-  border-style: solid;
-  margin-top: 5%;
-  margin-bottom: 5%;
-  padding: 3%;
-  overflow-x: auto;
-}
-
-code, pre {
-  font-family: 'Fantasque Sans Mono', monospace;
-  font-size: 90%;
-  color: #686868;
-}
-
-code:focus {
-  outline: none;
-}
-
-ul.hide-list {
-  padding-left: 0;
-}
-ul.hide-list > li {
-  list-style: none;
-}
-
-
-/* Style for newsletter form */
-
-input {
-  padding: 3px;
-  margin: 3% 0;
-  cursor: pointer;
-}
-
-/*
- * Print style
- */
 
 @media print {
   body {
     font-size: 80%;
     line-height: 120%;
-    padding: 0 20%;
+    @apply px-0;
   }
-
-  small, footer, .post-footer {
-    font-size: 60%;
-  }
-
-  header, footer, .post-footer {
+  header, footer {
     display: none;
-  }
-
-  article a {
-    color: black;
-    text-decoration: underline;
-  }
-
-  .author {
-    display: initial;
-  }
-
-  p, pre {
-    page-break-inside: avoid;
-  }
-
-  .post {
-    page-break-inside: avoid;
   }
 }
 
-/*
- * Github-inspired code highlighting
- * Thanks to
- * https://jwarby.github.io/jekyll-pygments-themes/languages/javascript.html
- */
-
+/* Github-inspired code highlighting */
 .makeup .hll { background-color: #ffffcc }
 .makeup .c { color: #999988; font-style: italic } /* Comment */
 .makeup .err { color: #a61717; background-color: #e3d2d2 } /* Error */
@@ -491,3 +142,68 @@ input {
 .makeup .vg { color: #008080 } /* Name.Variable.Global */
 .makeup .vi { color: #008080 } /* Name.Variable.Instance */
 .makeup .il { color: #009999 } /* Literal.Number.Integer.Long */
+
+/* Dark mode tweaks for syntax highlighting */
+@media (prefers-color-scheme: dark) {
+  .makeup .hll { background-color: #374151 }
+  .makeup .c { color: #9ca3af }
+  .makeup .err { color: #fca5a5; background-color: #7f1d1d }
+  .makeup .k { color: #e5e7eb; font-weight: bold }
+  .makeup .o { color: #e5e7eb; font-weight: bold }
+  .makeup .cm { color: #9ca3af }
+  .makeup .cp { color: #d1d5db }
+  .makeup .c1 { color: #9ca3af }
+  .makeup .cs { color: #d1d5db }
+  .makeup .gd { color: #e5e7eb; background-color: #7f1d1d }
+  .makeup .ge { color: #e5e7eb }
+  .makeup .gr { color: #f87171 }
+  .makeup .gh { color: #d1d5db }
+  .makeup .gi { color: #e5e7eb; background-color: #14532d }
+  .makeup .go { color: #9ca3af }
+  .makeup .gp { color: #9ca3af }
+  .makeup .gs { font-weight: bold; color: #e5e7eb }
+  .makeup .gu { color: #d1d5db }
+  .makeup .gt { color: #f87171 }
+  .makeup .kc { color: #e5e7eb }
+  .makeup .kd { color: #e5e7eb }
+  .makeup .kn { color: #e5e7eb }
+  .makeup .kp { color: #e5e7eb }
+  .makeup .kr { color: #e5e7eb }
+  .makeup .kt { color: #93c5fd }
+  .makeup .m { color: #5eead4 }
+  .makeup .s { color: #fca5a5 }
+  .makeup .na { color: #5eead4 }
+  .makeup .nb { color: #60a5fa }
+  .makeup .nc { color: #93c5fd }
+  .makeup .no { color: #5eead4 }
+  .makeup .nd { color: #5eead4 }
+  .makeup .ni { color: #d8b4fe }
+  .makeup .ne { color: #fca5a5 }
+  .makeup .nf { color: #fca5a5 }
+  .makeup .nl { color: #fca5a5 }
+  .makeup .nn { color: #9ca3af }
+  .makeup .nt { color: #93c5fd }
+  .makeup .nv { color: #5eead4 }
+  .makeup .ow { color: #e5e7eb }
+  .makeup .w { color: #4b5563 }
+  .makeup .mf { color: #5eead4 }
+  .makeup .mh { color: #5eead4 }
+  .makeup .mi { color: #5eead4 }
+  .makeup .mo { color: #5eead4 }
+  .makeup .sb { color: #fca5a5 }
+  .makeup .sc { color: #fca5a5 }
+  .makeup .sd { color: #fca5a5 }
+  .makeup .s2 { color: #fca5a5 }
+  .makeup .se { color: #fca5a5 }
+  .makeup .sh { color: #fca5a5 }
+  .makeup .si { color: #fca5a5 }
+  .makeup .sx { color: #fca5a5 }
+  .makeup .sr { color: #86efac }
+  .makeup .s1 { color: #fca5a5 }
+  .makeup .ss { color: #f0abfc }
+  .makeup .bp { color: #d1d5db }
+  .makeup .vc { color: #5eead4 }
+  .makeup .vg { color: #5eead4 }
+  .makeup .vi { color: #5eead4 }
+  .makeup .il { color: #5eead4 }
+}
