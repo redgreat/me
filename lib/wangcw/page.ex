@@ -37,6 +37,13 @@ defmodule CunweiWong.Page do
     #   raise "#{src_path} no keywords defined"
     # end
 
+    attrs =
+      if is_binary(attrs[:date]) do
+        Map.put(attrs, :date, Date.from_iso8601!(attrs[:date]))
+      else
+        attrs
+      end
+
     struct!(
       __MODULE__,
       [
@@ -57,6 +64,13 @@ defmodule CunweiWong.Page do
     html_path = Path.join(id, "index.html")
     src_path = file_path
     route = Path.join("/", Path.dirname(html_path)) <> "/"
+
+    attrs =
+      if is_binary(attrs[:date]) do
+        Map.put(attrs, :date, Date.from_iso8601!(attrs[:date]))
+      else
+        attrs
+      end
 
     struct!(
       __MODULE__,
