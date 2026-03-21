@@ -18,10 +18,20 @@ defmodule CunweiWong.Render do
     >
       <div class="mb-8 pb-6 border-b border-gray-200 dark:border-gray-800">
         <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 mb-4"><%= @title %></h1>
-        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 flex-wrap gap-y-2">
           <span class="mr-2 hidden sm:inline">✍️ wangcw</span>
           <span class="hidden sm:inline">&bull;</span>
           <span class="sm:ml-2">📅 <%= format_post_date(@date) %></span>
+          <%= if @categories && is_list(@categories) do %>
+            <span class="hidden sm:inline ml-2">&bull;</span>
+            <div class="flex gap-2 ml-2">
+              <%= for cat <- @categories do %>
+                <span class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-900/40 dark:text-indigo-300 dark:ring-indigo-700/30">
+                  🏷️ <%= cat %>
+                </span>
+              <% end %>
+            </div>
+          <% end %>
         </div>
       </div>
       
@@ -74,8 +84,17 @@ defmodule CunweiWong.Render do
             <h2 class="text-xl font-bold mb-4 text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800 pb-2"><%= format_post_date(date) %></h2>
             <div class="grid gap-6">
               <%= for post <- posts do %>
-                <a href={post.route} class="group block p-6 bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ring-1 ring-gray-900/5 dark:ring-white/5">
+                <a href={post.route} class="group block p-6 bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ring-1 ring-gray-900/5 dark:ring-white/5 flex flex-col gap-2">
                   <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"><%= post.title %></h3>
+                  <%= if post.categories && is_list(post.categories) do %>
+                    <div class="flex flex-wrap gap-2 mt-1">
+                      <%= for cat <- post.categories do %>
+                        <span class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-900/40 dark:text-indigo-300 dark:ring-indigo-700/30">
+                          🏷️ <%= cat %>
+                        </span>
+                      <% end %>
+                    </div>
+                  <% end %>
                 </a>
               <% end %>
             </div>
@@ -126,8 +145,17 @@ defmodule CunweiWong.Render do
             <h2 class="text-xl font-bold mb-4 text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800 pb-2"><%= format_post_date(date) %></h2>
             <div class="grid gap-6">
               <%= for post <- posts do %>
-                <a href={post.route} class="group block p-6 bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ring-1 ring-gray-900/5 dark:ring-white/5">
+                <a href={post.route} class="group block p-6 bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ring-1 ring-gray-900/5 dark:ring-white/5 flex flex-col gap-2">
                   <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"><%= post.title %></h3>
+                  <%= if post.categories && is_list(post.categories) do %>
+                    <div class="flex flex-wrap gap-2 mt-1">
+                      <%= for cat <- post.categories do %>
+                        <span class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-900/40 dark:text-indigo-300 dark:ring-indigo-700/30">
+                          🏷️ <%= cat %>
+                        </span>
+                      <% end %>
+                    </div>
+                  <% end %>
                 </a>
               <% end %>
             </div>

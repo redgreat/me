@@ -46,7 +46,7 @@ defmodule CunweiWong.Content do
   end
 
   def active_posts do
-    all_posts() |> Enum.reject(& &1.archive)
+    all_posts() |> Enum.take(20)
   end
 
   def about_page do
