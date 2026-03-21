@@ -20,7 +20,10 @@ defmodule CunweiWong.Page do
     :src_path,
     :html_path,
     :route,
-    :archive
+    :archive,
+    :categories,
+    :tags,
+    :description
   ]
 
   def build("pages/posts/" <> filename, attrs, body) do
