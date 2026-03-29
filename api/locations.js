@@ -35,8 +35,8 @@ module.exports = async (req, res) => {
     const { rows } = await sql`
       select lat, lng, ts
       from public.location_points
-      where ts >= ${date}::date
-        and ts < (${date}::date + interval '1 day')
+      where ts >= (${date}::date AT TIME ZONE 'Asia/Shanghai')
+        and ts < ((${date}::date + interval '1 day') AT TIME ZONE 'Asia/Shanghai')
       order by ts asc
     `;
 

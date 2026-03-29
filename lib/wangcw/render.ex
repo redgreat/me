@@ -181,198 +181,262 @@ defmodule CunweiWong.Render do
 
   def routes(assigns) do
     ~H"""
-    <.layout
-      title={Content.site_title()}
-      route="/routes/"
-    >
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
-      <div class="route-page group bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-white/5" id="route-app" data-endpoint="/api/locations">
-        <div class="route-header mb-6">
-          <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 mb-4">轨迹</h1>
-          <p class="text-gray-600 dark:text-gray-400">展示某一天的定位点轨迹，地图底图来自 OpenStreetMap。</p>
-          <p class="route-tip mt-2 text-sm text-gray-500 dark:text-gray-500" id="route-tip">请输入日期后加载定位数据。</p>
+    <.routes_layout title={Content.site_title()} route="/routes/" />
+    """
+  end
+
+  def routes_layout(assigns) do
+    ~H"""
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+      <head>
+        <meta charset="utf-8" />
+        <title><%= @title %></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="color-scheme" content="light dark" />
+        <link rel="stylesheet" href="/vendor/leaflet.css" />
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          html, body { height: 100%; width: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+          #route-map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+          .route-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+            border: 1px solid rgba(255,255,255,0.3);
+          }
+          @media (prefers-color-scheme: dark) {
+            .route-panel {
+              background: rgba(15, 23, 42, 0.7);
+              border-color: rgba(255,255,255,0.08);
+              box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+            }
+          }
+          .route-panel input[type="date"] {
+            padding: 5px 10px;
+            border: 1px solid rgba(0,0,0,0.12);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.6);
+            font-size: 14px;
+            color: #1e293b;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+          }
+          .route-panel input[type="date"]:focus { border-color: #6366f1; }
+          @media (prefers-color-scheme: dark) {
+            .route-panel input[type="date"] {
+              background: rgba(30, 41, 59, 0.7);
+              border-color: rgba(255,255,255,0.1);
+              color: #e2e8f0;
+            }
+          }
+          .route-panel .route-status {
+            font-size: 12px;
+            color: #64748b;
+            white-space: nowrap;
+          }
+          .route-panel .route-status[data-tone="loading"] { color: #f59e0b; }
+          .route-panel .route-status[data-tone="success"] { color: #10b981; }
+          .route-panel .route-status[data-tone="error"] { color: #ef4444; }
+          .route-panel .route-info {
+            font-size: 11px;
+            color: #94a3b8;
+            display: flex;
+            gap: 10px;
+          }
+          @media (prefers-color-scheme: dark) {
+            .route-panel .route-status { color: #94a3b8; }
+          }
+          .route-nav {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+          }
+          .route-nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4f46e5;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.2s;
+          }
+          .route-nav a:hover { background: rgba(255,255,255,0.9); }
+          @media (prefers-color-scheme: dark) {
+            .route-nav a {
+              background: rgba(15, 23, 42, 0.7);
+              border-color: rgba(255,255,255,0.08);
+              color: #818cf8;
+              box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+            }
+            .route-nav a:hover { background: rgba(15, 23, 42, 0.85); }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="route-nav">
+          <a href="/">← 返回</a>
         </div>
-        <div class="route-controls">
-          <label for="route-date" class="text-gray-700 dark:text-gray-300 font-medium whitespace-nowrap">日期</label>
+        <div class="route-panel" id="route-panel">
           <input type="date" id="route-date" />
-          <button id="route-load">加载</button>
           <span class="route-status" id="route-status"></span>
+          <span class="route-info">
+            <span id="route-count"></span>
+            <span id="route-range"></span>
+          </span>
         </div>
-        <div class="route-stats">
-          <div class="route-stat">
-            <span class="route-stat-label">点数</span>
-            <span class="route-stat-value" id="route-count">-</span>
-          </div>
-          <div class="route-stat">
-            <span class="route-stat-label">时间范围</span>
-            <span class="route-stat-value" id="route-range">-</span>
-          </div>
-        </div>
-        <div id="route-map" class="route-map"></div>
-      </div>
-      <footer class="mt-16 pt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        <p id="footer-cr"></p>
-      </footer>
-      <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          let currentYear = new Date().getFullYear();
-          let footerYear = document.getElementById('footer-cr');
-          let wlink = '<a href="https://www.wongcw.cn" target="_blank" class="hover:text-indigo-500 transition">wangcw</a>';
-          let elink = '<a href="https://erlang.org" target="_blank" class="hover:text-indigo-500 transition">Elixir/OTP</a>';
-          let vlink = '<a href="https://vercel.com" target="_blank" class="hover:text-indigo-500 transition">Vercel</a>';
-          footerYear.innerHTML = "Generated by " + elink + " & Published on " + vlink + "<br>Copyright © " + wlink + " 2020-" + currentYear + " All Rights Reserved";
-        });
-      </script>
-      <script>
-        const routeApp = document.getElementById('route-app');
-        const dateInput = document.getElementById('route-date');
-        const loadButton = document.getElementById('route-load');
-        const statusEl = document.getElementById('route-status');
-        const countEl = document.getElementById('route-count');
-        const rangeEl = document.getElementById('route-range');
-        const endpoint = routeApp.dataset.endpoint || '';
-        let map;
-        let trackLayer;
-        let startMarker;
-        let endMarker;
+        <div id="route-map" data-endpoint="/api/locations"></div>
+        <script src="/vendor/leaflet.js"></script>
+        <script>
+          const mapEl = document.getElementById('route-map');
+          const dateInput = document.getElementById('route-date');
+          const statusEl = document.getElementById('route-status');
+          const countEl = document.getElementById('route-count');
+          const rangeEl = document.getElementById('route-range');
+          const endpoint = mapEl.dataset.endpoint || '';
+          let map, trackLayer, startMarker, endMarker;
 
-        const now = new Date();
-        const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-          .toISOString()
-          .slice(0, 10);
+          /* 使用东八区时间计算今天日期 */
+          const now = new Date();
+          const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+          const cn = new Date(utc + 8 * 3600000);
+          const localDate = cn.getFullYear() + '-' +
+            String(cn.getMonth() + 1).padStart(2, '0') + '-' +
+            String(cn.getDate()).padStart(2, '0');
 
-        const params = new URLSearchParams(window.location.search);
-        const initialDate = params.get('date') || localDate;
-        dateInput.value = initialDate;
+          const params = new URLSearchParams(window.location.search);
+          const initialDate = params.get('date') || localDate;
+          dateInput.value = initialDate;
 
-        function setStatus(text, tone) {
-          statusEl.textContent = text || '';
-          statusEl.dataset.tone = tone || '';
-        }
+          function setStatus(text, tone) {
+            statusEl.textContent = text || '';
+            statusEl.dataset.tone = tone || '';
+          }
 
-        function setTip(text, tone) {
-          const tipEl = document.getElementById('route-tip');
-          if (!tipEl) return;
-          tipEl.textContent = text || '';
-          tipEl.dataset.tone = tone || '';
-        }
+          /* 将 UTC 时间戳转为东八区时间显示 */
+          function formatTimeCN(value) {
+            if (!value) return '';
+            const d = new Date(value);
+            if (Number.isNaN(d.getTime())) return '';
+            const cn = new Date(d.getTime() + (d.getTimezoneOffset() + 480) * 60000);
+            const pad = n => String(n).padStart(2, '0');
+            return pad(cn.getHours()) + ':' + pad(cn.getMinutes()) + ':' + pad(cn.getSeconds());
+          }
 
-        function formatTime(value) {
-          if (!value) return '';
-          const date = new Date(value);
-          if (Number.isNaN(date.getTime())) return '';
-          const pad = (num) => String(num).padStart(2, '0');
-          return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-        }
+          function normalizePoints(data) {
+            if (Array.isArray(data)) return data;
+            if (data && Array.isArray(data.points)) return data.points;
+            return [];
+          }
 
-        function normalizePoints(data) {
-          if (Array.isArray(data)) return data;
-          if (data && Array.isArray(data.points)) return data.points;
-          return [];
-        }
+          function toLatLng(p) {
+            const lat = Number(p.lat ?? p.latitude);
+            const lng = Number(p.lng ?? p.lon ?? p.longitude);
+            if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+            return [lat, lng];
+          }
 
-        function toLatLng(point) {
-          const lat = point.lat ?? point.latitude;
-          const lng = point.lng ?? point.lon ?? point.longitude;
-          const latNumber = Number(lat);
-          const lngNumber = Number(lng);
-          if (!Number.isFinite(latNumber) || !Number.isFinite(lngNumber)) return null;
-          return [latNumber, lngNumber];
-        }
+          function ensureMap(center) {
+            if (!map) {
+              map = L.map('route-map', {
+                preferCanvas: true,
+                zoomControl: false
+              });
+              L.control.zoom({ position: 'bottomright' }).addTo(map);
+              L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+              }).addTo(map);
+              L.control.scale({ position: 'bottomleft' }).addTo(map);
+            }
+            map.setView(center, 12);
+          }
 
-        function ensureMap(center) {
-          if (!map) {
-            map = L.map('route-map', { preferCanvas: true });
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              maxZoom: 19,
-              attribution: '&copy; OpenStreetMap contributors'
+          function renderTrack(points) {
+            const latlngs = points.map(toLatLng).filter(Boolean);
+            if (latlngs.length === 0) {
+              setStatus('无数据', 'empty');
+              countEl.textContent = '';
+              rangeEl.textContent = '';
+              return;
+            }
+
+            ensureMap(latlngs[0]);
+            if (trackLayer) map.removeLayer(trackLayer);
+            if (startMarker) map.removeLayer(startMarker);
+            if (endMarker) map.removeLayer(endMarker);
+
+            trackLayer = L.polyline(latlngs, {
+              color: '#6366f1', weight: 3.5, opacity: 0.85,
+              smoothFactor: 1.2, lineJoin: 'round'
             }).addTo(map);
-            L.control.scale().addTo(map);
+            map.fitBounds(trackLayer.getBounds(), { padding: [40, 40] });
+
+            startMarker = L.circleMarker(latlngs[0], {
+              radius: 6, color: '#fff', fillColor: '#10b981',
+              fillOpacity: 1, weight: 2
+            }).addTo(map).bindTooltip('起点');
+
+            endMarker = L.circleMarker(latlngs[latlngs.length - 1], {
+              radius: 6, color: '#fff', fillColor: '#ef4444',
+              fillOpacity: 1, weight: 2
+            }).addTo(map).bindTooltip('终点');
+
+            countEl.textContent = latlngs.length + ' 点';
+            const st = formatTimeCN(points[0]?.ts || points[0]?.time || points[0]?.timestamp);
+            const et = formatTimeCN(points[points.length - 1]?.ts || points[points.length - 1]?.time || points[points.length - 1]?.timestamp);
+            rangeEl.textContent = st && et ? st + ' ~ ' + et : '';
+            setStatus('✓', 'success');
           }
-          map.setView(center, 12);
-        }
 
-        function renderTrack(points) {
-          const latlngs = points
-            .map(toLatLng)
-            .filter((item) => item);
-
-          if (latlngs.length === 0) {
-            setStatus('没有可用的定位点', 'empty');
-            setTip('该日期没有可用数据。', 'empty');
-            countEl.textContent = '0';
-            rangeEl.textContent = '-';
-            return;
+          async function loadDate(date) {
+            if (!date || !endpoint) return;
+            setStatus('加载中…', 'loading');
+            countEl.textContent = '';
+            rangeEl.textContent = '';
+            try {
+              const res = await fetch(endpoint + '?date=' + date);
+              if (!res.ok) throw new Error(res.status);
+              const data = await res.json();
+              renderTrack(normalizePoints(data));
+            } catch (e) {
+              setStatus('失败', 'error');
+            }
           }
 
-          ensureMap(latlngs[0]);
+          dateInput.addEventListener('change', function() {
+            const date = dateInput.value;
+            const url = new URL(window.location.href);
+            url.searchParams.set('date', date);
+            window.history.replaceState({}, '', url.toString());
+            loadDate(date);
+          });
 
-          if (trackLayer) map.removeLayer(trackLayer);
-          if (startMarker) map.removeLayer(startMarker);
-          if (endMarker) map.removeLayer(endMarker);
-
-          trackLayer = L.polyline(latlngs, { color: '#2f4bff', weight: 3 });
-          trackLayer.addTo(map);
-          map.fitBounds(trackLayer.getBounds(), { padding: [20, 20] });
-
-          startMarker = L.circleMarker(latlngs[0], { radius: 5, color: '#10b981' }).addTo(map);
-          endMarker = L.circleMarker(latlngs[latlngs.length - 1], { radius: 5, color: '#ef4444' }).addTo(map);
-
-          countEl.textContent = String(latlngs.length);
-          const startTime = formatTime(points[0]?.ts || points[0]?.time || points[0]?.timestamp);
-          const endTime = formatTime(points[points.length - 1]?.ts || points[points.length - 1]?.time || points[points.length - 1]?.timestamp);
-          rangeEl.textContent = startTime && endTime ? `${startTime} - ${endTime}` : '-';
-          setStatus('加载成功', 'success');
-          setTip('数据来自后端接口。', 'success');
-        }
-
-        async function fetchPoints(date) {
-          if (!endpoint) {
-            throw new Error('missing-endpoint');
-          }
-          const response = await fetch(`${endpoint}?date=${date}`);
-          if (!response.ok) {
-            throw new Error(`status:${response.status}`);
-          }
-          return response.json();
-        }
-
-        async function loadDate(date) {
-          if (!date) return;
-          setStatus('加载中...', 'loading');
-          setTip('正在从后端获取数据...', 'loading');
-          try {
-            const data = await fetchPoints(date);
-            renderTrack(normalizePoints(data));
-          } catch (error) {
-            setStatus('加载失败', 'error');
-            setTip('接口不可用或数据为空，请稍后重试。', 'error');
-            countEl.textContent = '-';
-            rangeEl.textContent = '-';
-          }
-        }
-
-        loadButton.addEventListener('click', function() {
-          const date = dateInput.value;
-          const url = new URL(window.location.href);
-          url.searchParams.set('date', date);
-          window.history.replaceState({}, '', url.toString());
-          loadDate(date);
-        });
-
-        dateInput.addEventListener('change', function() {
-          loadButton.click();
-        });
-
-        if (!endpoint) {
-          setStatus('接口未配置', 'error');
-          setTip('当前未配置后端接口，无法加载定位数据。', 'error');
-        } else {
-          loadDate(initialDate);
-        }
-      </script>
-    </.layout>
+          if (endpoint) loadDate(initialDate);
+          else setStatus('未配置', 'error');
+        </script>
+      </body>
+    </html>
     """
   end
 
