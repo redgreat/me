@@ -194,15 +194,29 @@ defmodule CunweiWong.Render do
         <title><%= @title %></title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="color-scheme" content="light dark" />
+        <link rel="stylesheet" href="/assets/app.css" />
         <link rel="stylesheet" href="/vendor/leaflet.css" />
         <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          html, body { height: 100%; width: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-          #route-map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+          html, body { 
+            height: 100%; 
+            width: 100%; 
+            overflow: hidden; 
+            margin: 0; 
+            padding: 0;
+            overscroll-behavior: none;
+          }
+          #route-map { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: 0; 
+          }
           .route-panel {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 12px;
+            right: 12px;
             z-index: 1000;
             background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(12px);
@@ -212,37 +226,42 @@ defmodule CunweiWong.Render do
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.4);
           }
           @media (prefers-color-scheme: dark) {
             .route-panel {
-              background: rgba(15, 23, 42, 0.7);
-              border-color: rgba(255,255,255,0.08);
-              box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+              background: rgba(15, 23, 42, 0.75);
+              border-color: rgba(255,255,255,0.1);
+              box-shadow: 0 4px 16px rgba(0,0,0,0.5);
             }
           }
           .route-panel input[type="date"] {
-            padding: 5px 10px;
-            border: 1px solid rgba(0,0,0,0.12);
+            padding: 6px 12px;
+            border: 1px solid rgba(0,0,0,0.1);
             border-radius: 8px;
-            background: rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.8);
             font-size: 14px;
             color: #1e293b;
             outline: none;
             cursor: pointer;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
+            font-family: inherit;
           }
-          .route-panel input[type="date"]:focus { border-color: #6366f1; }
+          .route-panel input[type="date"]:focus { 
+            border-color: #6366f1; 
+            box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+          }
           @media (prefers-color-scheme: dark) {
             .route-panel input[type="date"] {
-              background: rgba(30, 41, 59, 0.7);
+              background: rgba(30, 41, 59, 0.8);
               border-color: rgba(255,255,255,0.1);
               color: #e2e8f0;
             }
           }
           .route-panel .route-status {
-            font-size: 12px;
+            font-size: 13px;
+            font-weight: 500;
             color: #64748b;
             white-space: nowrap;
           }
@@ -250,62 +269,42 @@ defmodule CunweiWong.Render do
           .route-panel .route-status[data-tone="success"] { color: #10b981; }
           .route-panel .route-status[data-tone="error"] { color: #ef4444; }
           .route-panel .route-info {
-            font-size: 11px;
+            font-size: 12px;
             color: #94a3b8;
             display: flex;
-            gap: 10px;
-          }
-          @media (prefers-color-scheme: dark) {
-            .route-panel .route-status { color: #94a3b8; }
-          }
-          .route-nav {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 1000;
-          }
-          .route-nav a {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 8px 14px;
-            background: rgba(255,255,255,0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 10px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            color: #4f46e5;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-            border: 1px solid rgba(255,255,255,0.3);
-            transition: all 0.2s;
-          }
-          .route-nav a:hover { background: rgba(255,255,255,0.9); }
-          @media (prefers-color-scheme: dark) {
-            .route-nav a {
-              background: rgba(15, 23, 42, 0.7);
-              border-color: rgba(255,255,255,0.08);
-              color: #818cf8;
-              box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-            }
-            .route-nav a:hover { background: rgba(15, 23, 42, 0.85); }
+            gap: 12px;
+            margin-left: 4px;
           }
         </style>
       </head>
-      <body>
-        <div class="route-nav">
-          <a href="/">← 返回</a>
-        </div>
-        <div class="route-panel" id="route-panel">
-          <input type="date" id="route-date" />
-          <span class="route-status" id="route-status"></span>
-          <span class="route-info">
-            <span id="route-count"></span>
-            <span id="route-range"></span>
-          </span>
-        </div>
-        <div id="route-map" data-endpoint="/api/locations"></div>
+      <body class="bg-gray-50 text-gray-900 dark:bg-[#0f172a] dark:text-gray-100 h-[100dvh] antialiased flex flex-col overflow-hidden">
+        <header class="flex-none sticky top-0 z-[1001] w-full backdrop-blur transition-colors duration-500 bg-white/75 dark:bg-[#0f172a]/75 border-b border-gray-200 dark:border-gray-800">
+          <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+              <div class="flex-shrink-0">
+                <a href="/" class="font-bold text-xl tracking-tight text-indigo-600 dark:text-indigo-400 font-serif italic">wangcw</a>
+              </div>
+              <nav class="flex space-x-6 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <a href="/" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">主页</a>
+                <a href="/archive/" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">归档</a>
+                <a href="/routes/" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">轨迹</a>
+                <a href="/about/" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">关于</a>
+              </nav>
+            </div>
+          </div>
+        </header>
+
+        <main class="flex-grow w-full relative">
+          <div class="route-panel" id="route-panel">
+            <input type="date" id="route-date" />
+            <span class="route-status" id="route-status"></span>
+            <span class="route-info">
+              <span id="route-count"></span>
+              <span id="route-range"></span>
+            </span>
+          </div>
+          <div id="route-map" data-endpoint="/api/locations"></div>
+        </main>
         <script src="/vendor/leaflet.js"></script>
         <script>
           const mapEl = document.getElementById('route-map');
@@ -363,9 +362,10 @@ defmodule CunweiWong.Render do
                 zoomControl: false
               });
               L.control.zoom({ position: 'bottomright' }).addTo(map);
-              L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                 maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+                subdomains: 'abcd',
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
               }).addTo(map);
               L.control.scale({ position: 'bottomleft' }).addTo(map);
             }
