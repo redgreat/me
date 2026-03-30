@@ -185,11 +185,13 @@ defmodule CunweiWong.Render do
       title={Content.site_title()}
       route="/routes/"
     >
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+      <style>
+        .amap-logo, .amap-copyright { display: none !important; }
+      </style>
       <div class="route-page group bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-white/5" id="route-app" data-endpoint="/api/locations">
         <div class="route-header mb-6">
           <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 mb-4">轨迹</h1>
-          <p class="text-gray-600 dark:text-gray-400">展示某一天的定位点轨迹，地图底图来自 OpenStreetMap。</p>
+          <p class="text-gray-600 dark:text-gray-400">展示某一天的定位点轨迹，地图底图来自高德地图（马卡龙主题）。</p>
           <p class="route-tip mt-2 text-sm text-gray-500 dark:text-gray-500" id="route-tip">请输入日期后加载定位数据。</p>
         </div>
         <div class="route-controls">
@@ -213,7 +215,13 @@ defmodule CunweiWong.Render do
       <footer class="mt-16 pt-8 text-center text-sm text-gray-500 dark:text-gray-400">
         <p id="footer-cr"></p>
       </footer>
-      <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+      <!-- 引入高德地图 API，注意替换为您自己的 KEY 和安全密钥 -->
+      <script>
+        window._AMapSecurityConfig = {
+            securityJsCode: 'YOUR_AMAP_SECURITY_CODE', // TODO: 请替换为您的安全密钥
+        }
+      </script>
+      <script src="https://webapi.amap.com/maps?v=2.0&key=YOUR_AMAP_KEY"></script>
       <script>
         document.addEventListener('DOMContentLoaded', function() {
           let currentYear = new Date().getFullYear();
@@ -225,6 +233,41 @@ defmodule CunweiWong.Render do
         });
       </script>
       <script>
+        // === WGS84 转 GCJ02 的纯 JS 算法 ===
+        const PI = 3.1415926535897932384626;
+        const a = 6378245.0;
+        const ee = 0.00669342162296594323;
+        function transformLat(x, y) {
+          let ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+          ret += (20.0 * Math.sin(6.0 * x * PI) + 20.0 * Math.sin(2.0 * x * PI)) * 2.0 / 3.0;
+          ret += (20.0 * Math.sin(y * PI) + 40.0 * Math.sin(y / 3.0 * PI)) * 2.0 / 3.0;
+          ret += (160.0 * Math.sin(y / 12.0 * PI) + 320 * Math.sin(y * PI / 30.0)) * 2.0 / 3.0;
+          return ret;
+        }
+        function transformLon(x, y) {
+          let ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+          ret += (20.0 * Math.sin(6.0 * x * PI) + 20.0 * Math.sin(2.0 * x * PI)) * 2.0 / 3.0;
+          ret += (20.0 * Math.sin(x * PI) + 40.0 * Math.sin(x / 3.0 * PI)) * 2.0 / 3.0;
+          ret += (150.0 * Math.sin(x / 12.0 * PI) + 300.0 * Math.sin(x / 30.0 * PI)) * 2.0 / 3.0;
+          return ret;
+        }
+        function outOfChina(lng, lat) {
+          return lng < 72.004 || lng > 137.8347 || lat < 0.8293 || lat > 55.8271;
+        }
+        function wgs84ToGcj02(lng, lat) {
+          if (outOfChina(lng, lat)) return [lng, lat];
+          let dLat = transformLat(lng - 105.0, lat - 35.0);
+          let dLng = transformLon(lng - 105.0, lat - 35.0);
+          let radLat = lat / 180.0 * PI;
+          let magic = Math.sin(radLat);
+          magic = 1 - ee * magic * magic;
+          let sqrtMagic = Math.sqrt(magic);
+          dLat = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sqrtMagic) * PI);
+          dLng = (dLng * 180.0) / (a / sqrtMagic * Math.cos(radLat) * PI);
+          return [lng + dLng, lat + dLat];
+        }
+
+        // === 轨迹业务代码 ===
         const routeApp = document.getElementById('route-app');
         const dateInput = document.getElementById('route-date');
         const loadButton = document.getElementById('route-load');
@@ -272,33 +315,36 @@ defmodule CunweiWong.Render do
           return [];
         }
 
-        function toLatLng(point) {
+        function toGcj02LngLat(point) {
           const lat = point.lat ?? point.latitude;
           const lng = point.lng ?? point.lon ?? point.longitude;
           const latNumber = Number(lat);
           const lngNumber = Number(lng);
           if (!Number.isFinite(latNumber) || !Number.isFinite(lngNumber)) return null;
-          return [latNumber, lngNumber];
+          // 转换为 GCJ02 火星坐标以便在高德地图上准确显示
+          return wgs84ToGcj02(lngNumber, latNumber);
         }
 
         function ensureMap(center) {
-          if (!map) {
-            map = L.map('route-map', { preferCanvas: true });
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              maxZoom: 19,
-              attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
-            L.control.scale().addTo(map);
+          if (!map && typeof AMap !== 'undefined') {
+            map = new AMap.Map('route-map', {
+              zoom: 12,
+              center: center,
+              mapStyle: 'amap://styles/macaron',
+              showLabel: true
+            });
+          } else if (map) {
+            map.setCenter(center);
           }
-          map.setView(center, 12);
         }
 
         function renderTrack(points) {
-          const latlngs = points
-            .map(toLatLng)
+          // 过滤并转换坐标系为火星坐标 (GCJ02)
+          const lnglats = points
+            .map(toGcj02LngLat)
             .filter((item) => item);
 
-          if (latlngs.length === 0) {
+          if (lnglats.length === 0) {
             setStatus('没有可用的定位点', 'empty');
             setTip('该日期没有可用数据。', 'empty');
             countEl.textContent = '0';
@@ -306,20 +352,47 @@ defmodule CunweiWong.Render do
             return;
           }
 
-          ensureMap(latlngs[0]);
+          ensureMap(lnglats[0]);
 
-          if (trackLayer) map.removeLayer(trackLayer);
-          if (startMarker) map.removeLayer(startMarker);
-          if (endMarker) map.removeLayer(endMarker);
+          if (trackLayer) map.remove(trackLayer);
+          if (startMarker) map.remove(startMarker);
+          if (endMarker) map.remove(endMarker);
 
-          trackLayer = L.polyline(latlngs, { color: '#2f4bff', weight: 3 });
-          trackLayer.addTo(map);
-          map.fitBounds(trackLayer.getBounds(), { padding: [20, 20] });
+          trackLayer = new AMap.Polyline({
+            path: lnglats,
+            strokeColor: '#2f4bff',
+            strokeWeight: 4,
+            strokeOpacity: 0.8,
+            lineJoin: 'round',
+            lineCap: 'round',
+            zIndex: 50
+          });
+          map.add(trackLayer);
 
-          startMarker = L.circleMarker(latlngs[0], { radius: 5, color: '#10b981' }).addTo(map);
-          endMarker = L.circleMarker(latlngs[latlngs.length - 1], { radius: 5, color: '#ef4444' }).addTo(map);
+          startMarker = new AMap.CircleMarker({
+            center: lnglats[0],
+            radius: 5,
+            fillColor: '#10b981',
+            strokeColor: '#ffffff',
+            strokeWeight: 2,
+            zIndex: 100
+          });
+          map.add(startMarker);
+          
+          endMarker = new AMap.CircleMarker({
+            center: lnglats[lnglats.length - 1],
+            radius: 5,
+            fillColor: '#ef4444',
+            strokeColor: '#ffffff',
+            strokeWeight: 2,
+            zIndex: 100
+          });
+          map.add(endMarker);
 
-          countEl.textContent = String(latlngs.length);
+          // 自动缩放地图视口以包含整个轨迹
+          map.setFitView([trackLayer]);
+
+          countEl.textContent = String(lnglats.length);
           const startTime = formatTime(points[0]?.ts || points[0]?.time || points[0]?.timestamp);
           const endTime = formatTime(points[points.length - 1]?.ts || points[points.length - 1]?.time || points[points.length - 1]?.timestamp);
           rangeEl.textContent = startTime && endTime ? `${startTime} - ${endTime}` : '-';
