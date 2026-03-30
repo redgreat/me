@@ -38,36 +38,7 @@
   }
 }
 
-.route-page {
-  @apply px-4 sm:px-6 lg:px-8 py-8 w-full max-w-5xl mx-auto;
-}
-.route-controls {
-  @apply flex items-center gap-3 flex-wrap my-4;
-}
-.route-controls input {
-  @apply px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100;
-}
-.route-controls button {
-  @apply px-4 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 cursor-pointer transition-colors;
-}
-.route-status {
-  @apply text-sm text-gray-500 dark:text-gray-400;
-}
-.route-stats {
-  @apply flex gap-6 my-4 text-sm;
-}
-.route-stat {
-  @apply flex flex-col gap-1;
-}
-.route-stat-label {
-  @apply text-gray-500 dark:text-gray-400;
-}
-.route-stat-value {
-  @apply font-semibold text-gray-900 dark:text-gray-100;
-}
-.route-map {
-  @apply w-full h-[60vh] sm:h-[70vh] border border-gray-200 dark:border-gray-700 rounded-xl z-0;
-}
+/* Route page styles moved to inline in routes_layout */
 
 @media print {
   body {
