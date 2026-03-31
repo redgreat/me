@@ -212,6 +212,7 @@ defmodule CunweiWong.Render do
             width: 100%; 
             height: 100%; 
             z-index: 0; 
+            background: transparent !important;
           }
           .route-panel {
             position: absolute;
@@ -400,8 +401,9 @@ defmodule CunweiWong.Render do
               map = new AMap.Map('route-map', {
                 zoom: 12,
                 center: center,
-                mapStyle: 'amap://styles/macaron',
-                showLabel: true
+                mapStyle: 'amap://styles/dark',
+                showLabel: true,
+                backgroundColor: 'transparent'
               });
             } else if (map) {
               map.setCenter(center);

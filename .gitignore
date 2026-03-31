@@ -31,3 +31,5 @@ personal_website-*.tar
 /.elixir_ls/
 
 .DS_Store
+
+.idea
