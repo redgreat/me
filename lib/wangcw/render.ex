@@ -306,13 +306,12 @@ defmodule CunweiWong.Render do
           <div id="route-map" data-endpoint="/api/locations"></div>
         </main>
 
-        <!-- 引入高德地图 API，注意替换为您自己的 KEY 和安全密钥 -->
         <script>
           window._AMapSecurityConfig = {
-              securityJsCode: 'YOUR_AMAP_SECURITY_CODE', // TODO: 请替换为您的安全密钥
+              securityJsCode: '641af2cc3789991d5408e3429e29bb11'
           }
         </script>
-        <script src="https://webapi.amap.com/maps?v=2.0&key=YOUR_AMAP_KEY"></script>
+        <script src="https://webapi.amap.com/maps?v=2.0&key=8ed6fc7322bad71471c034af8b681cb6"></script>
         <script>
           // === WGS84 转 GCJ02 的纯 JS 算法 ===
           const PI = 3.1415926535897932384626;
