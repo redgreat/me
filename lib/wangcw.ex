@@ -9,15 +9,21 @@ defmodule CunweiWong do
 
   @output_dir "./output"
 
-  def assert_uniq_page_ids!(pages) do
-    ids = pages |> Enum.map(& &1.id)
+  @doc """
+  对页面按 id 去重，当存在重复 id 时保留日期最早的一篇，忽略较晚的
+  """
+  def dedup_by_id(posts) do
+    ids = posts |> Enum.map(& &1.id)
     dups = Enum.uniq(ids -- Enum.uniq(ids))
 
-    if dups |> Enum.empty?() do
-      :ok
-    else
-      raise "Duplicate pages: #{inspect(dups)}"
+    if not Enum.empty?(dups) do
+      Logger.warning("Duplicate page ids found, keeping earliest: #{inspect(dups)}")
     end
+
+    posts
+    |> Enum.reverse()
+    |> Enum.uniq_by(& &1.id)
+    |> Enum.reverse()
   end
 
   def render_posts(posts) do
@@ -33,11 +39,10 @@ defmodule CunweiWong do
   end
 
   def build_pages() do
-    pages = Content.all_pages()
-    all_posts = Content.all_posts()
+    all_posts = Content.all_posts() |> dedup_by_id()
     about_page = Content.about_page()
-    assert_uniq_page_ids!(pages)
-    render_file("index.html", Render.index(%{posts: Content.active_posts()}))
+    active_posts = Content.active_posts() |> dedup_by_id()
+    render_file("index.html", Render.index(%{posts: active_posts}))
     render_file("404.html", Render.page(Content.not_found_page()))
     render_file(about_page.html_path, Render.page(about_page))
     render_file("archive/index.html", Render.archive(%{posts: all_posts}))
