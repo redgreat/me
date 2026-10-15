@@ -23,7 +23,7 @@ defmodule CunweiWong.MixProject do
       {:nimble_publisher, "~> 2.1.0"},
       {:earmark, "~> 1.4.48"},
       {:makeup_elixir, "~> 1.0.1"},
-      {:makeup_html, "~> 0.2.0"},
+      {:makeup_html, "~> 1.0.0"},
       {:phoenix_live_view, "~> 1.2.3"},
       {:xml_builder, "~> 2.4.0"},
       {:yaml_elixir, "~> 2.12.0"},
