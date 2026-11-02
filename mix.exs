@@ -20,7 +20,7 @@ defmodule CunweiWong.MixProject do
 
   defp deps do
     [
-      {:nimble_publisher, "~> 2.1.0"},
+      {:nimble_publisher, "~> 2.2.0"},
       {:earmark, "~> 1.4.48"},
       {:makeup_elixir, "~> 1.0.1"},
       {:makeup_html, "~> 1.0.0"},
