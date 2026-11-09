@@ -41,12 +41,12 @@ defmodule CunweiWong do
   def build_pages() do
     all_posts = Content.all_posts() |> dedup_by_id()
     about_page = Content.about_page()
-    active_posts = Content.active_posts() |> dedup_by_id()
+    active_posts = Enum.take(all_posts, 20)
     render_file("index.html", Render.index(%{posts: active_posts}))
     render_file("404.html", Render.page(Content.not_found_page()))
     render_file(about_page.html_path, Render.page(about_page))
     render_file("archive/index.html", Render.archive(%{posts: all_posts}))
-    render_file("routes/index.html", Render.routes(%{routes: []}))
+
     render_posts(all_posts)
     render_redirects(Content.redirects())
     :ok

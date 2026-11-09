@@ -1,5 +1,5 @@
 %{
-  title: "PostgreSQL连接池与连接管理：边缘计算场景入门指南",
+  title: "2026-05-20 PostgreSQL连接池与连接管理：边缘计算场景入门指南",
   archive: false,
   date: "2026-05-20",
   categories: ["数据库技术", "自动化博客"]

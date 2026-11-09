@@ -1,9 +1,6 @@
 defmodule CunweiWong.DevServer do
   @moduledoc false
   use Plug.Router
-  CunweiWong.build_all()
-
-  def __mix_recompile__?, do: true
 
   plug(Plug.Logger, log: :info)
   plug(Plug.Static, at: "/", from: "output")
@@ -11,14 +8,21 @@ defmodule CunweiWong.DevServer do
   plug(:dispatch)
 
   get "/*path" do
-    decoded_path = URI.decode(conn.path_info |> Enum.join("/"))
-    full_path = Path.join([File.cwd!(), "output", decoded_path, "index.html"])
+    root = Path.expand("output")
+    segments = Enum.map(conn.path_info, &URI.decode/1)
 
-    if File.exists?(full_path) do
+    safe? =
+      Enum.all?(
+        segments,
+        &(&1 not in [".", ".."] and not String.contains?(&1, ["/", "\\", ":", <<0>>]))
+      )
+
+    full_path = Path.join([root | segments] ++ ["index.html"])
+
+    if safe? and File.regular?(full_path) do
       send_file(conn, 200, full_path)
     else
-      not_found_path = Path.join([File.cwd!(), "output", "404.html"])
-      send_file(conn, 404, not_found_path)
+      send_file(conn, 404, Path.join(root, "404.html"))
     end
   end
 end

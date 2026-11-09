@@ -21,13 +21,9 @@ defmodule CunweiWong.MixProject do
   defp deps do
     [
       {:nimble_publisher, "~> 2.2.0"},
-      {:earmark, "~> 1.4.48"},
       {:makeup_elixir, "~> 1.0.1"},
       {:makeup_html, "~> 1.0.0"},
       {:phoenix_live_view, "~> 1.2.3"},
-      {:xml_builder, "~> 2.4.0"},
-      {:yaml_elixir, "~> 2.12.0"},
-      {:html_sanitize_ex, "~> 1.5.0"},
       {:tailwind, "~> 0.5.1"},
       {:bandit, "~> 1.14.1"},
       {:credo, "~> 1.7.8"}

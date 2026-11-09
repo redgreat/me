@@ -1,5 +1,5 @@
 %{
-  title: "OceanBase云原生部署实践：高并发电商场景高级优化",
+  title: "2026-07-08 OceanBase云原生部署实践：高并发电商场景高级优化",
   archive: false,
   date: "2026-07-08",
   categories: ["数据库技术", "自动化博客"]

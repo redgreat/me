@@ -1,5 +1,5 @@
 %{
-  title: "OceanBase性能监控与调优：物联网数据平台高级优化",
+  title: "2026-07-02 OceanBase性能监控与调优：物联网数据平台高级优化",
   archive: false,
   date: "2026-07-02",
   categories: ["数据库技术", "自动化博客"]

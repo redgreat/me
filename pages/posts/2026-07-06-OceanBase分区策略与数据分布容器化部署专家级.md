@@ -1,5 +1,5 @@
 %{
-  title: "OceanBase分区策略与数据分布：容器化部署专家级",
+  title: "2026-07-06 OceanBase分区策略与数据分布：容器化部署专家级",
   archive: false,
   date: "2026-07-06",
   categories: ["数据库技术", "自动化博客"]

@@ -1,5 +1,5 @@
 %{
-  title: "GreatSQL与MySQL生态兼容：多数据中心架构中级实践",
+  title: "2026-06-08 GreatSQL与MySQL生态兼容：多数据中心架构中级实践",
   archive: false,
   date: "2026-06-08",
   categories: ["数据库技术", "自动化博客"]

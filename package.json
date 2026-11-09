@@ -1,7 +1,0 @@
-{
-  "name": "me",
-  "private": true,
-  "dependencies": {
-    "@vercel/postgres": "^0.10.0"
-  }
-}

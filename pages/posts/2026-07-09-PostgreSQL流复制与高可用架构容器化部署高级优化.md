@@ -1,5 +1,5 @@
 %{
-  title: "PostgreSQL流复制与高可用架构：容器化部署高级优化",
+  title: "2026-07-09 PostgreSQL流复制与高可用架构：容器化部署高级优化",
   archive: false,
   date: "2026-07-09",
   categories: ["数据库技术", "自动化博客"]

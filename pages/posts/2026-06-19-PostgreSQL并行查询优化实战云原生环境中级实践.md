@@ -1,5 +1,5 @@
 %{
-  title: "PostgreSQL并行查询优化实战：云原生环境中级实践",
+  title: "2026-06-19 PostgreSQL并行查询优化实战：云原生环境中级实践",
   archive: false,
   date: "2026-06-19",
   categories: ["数据库技术", "自动化博客"]

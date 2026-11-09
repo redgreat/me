@@ -8,7 +8,7 @@ defmodule CunweiWong.Content do
     from: "./pages/**/*.md",
     as: :pages,
     highlighters: [:makeup_elixir, :makeup_html],
-    earmark_options: [breaks: true]
+    comrak_options: [render: [hardbreaks: true]]
 
   def site_title() do
     "無糧不聚兵"
