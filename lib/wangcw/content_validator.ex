@@ -113,89 +113,11 @@ defmodule CunweiWong.ContentValidator do
   end
 
   # A line-by-line state machine keeps fenced code and Markdown headings in sync.
-  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity, Credo.Check.Refactor.Nesting
   defp check_body(path, lines, first_line, errors, warnings) do
     {errors, warnings, fence, _heading_stack} =
       lines
       |> Enum.with_index(first_line)
-      |> Enum.reduce({errors, warnings, nil, []}, fn {line, number},
-                                                     {errors, warnings, fence, headings} ->
-        cond do
-          is_nil(fence) and Regex.match?(~r/^\s*```/, line) ->
-            language =
-              line
-              |> String.trim_leading()
-              |> String.trim_leading("```")
-              |> String.trim()
-              |> String.downcase()
-
-            warning =
-              if language in ["mermaid", "mindmap", "markmap", "plantuml", "graphviz"] do
-                [
-                  issue(
-                    path,
-                    number,
-                    "diagram fence #{inspect(language)} is not rendered by this site"
-                  )
-                ]
-              else
-                []
-              end
-
-            {errors, warnings ++ warning, if(language == "", do: "", else: language), headings}
-
-          not is_nil(fence) and Regex.match?(~r/^\s*```\s*$/, line) ->
-            {errors, warnings, nil, headings}
-
-          not is_nil(fence) ->
-            {errors, warnings, fence, headings}
-
-          Regex.match?(~r/^\s*\#{1,6}(?:\s|$)/, line) ->
-            level =
-              line
-              |> String.trim_leading()
-              |> String.graphemes()
-              |> Enum.take_while(&(&1 == "#"))
-              |> length()
-
-            text =
-              line
-              |> String.trim_leading()
-              |> String.trim_leading("#")
-              |> String.trim()
-              |> String.trim_trailing("#")
-              |> String.trim()
-
-            prior =
-              Enum.find(headings, fn {old_level, old_text, _old_line} ->
-                old_level == level and normalize(old_text) == normalize(text)
-              end)
-
-            heading_errors =
-              if text == "", do: [issue(path, number, "heading must not be empty")], else: []
-
-            heading_warnings =
-              if prior,
-                do: [
-                  issue(
-                    path,
-                    number,
-                    "repeated H#{level} heading #{inspect(text)} (first at line #{elem(prior, 2)})"
-                  )
-                ],
-                else: []
-
-            stack = [
-              {level, text, number}
-              | Enum.reject(headings, fn {old_level, _text, _line} -> old_level == level end)
-            ]
-
-            {errors ++ heading_errors, warnings ++ heading_warnings, fence, stack}
-
-          true ->
-            {errors, warnings, fence, headings}
-        end
-      end)
+      |> Enum.reduce({errors, warnings, nil, []}, &check_body_line(path, &1, &2))
 
     errors =
       case fence do
@@ -207,39 +129,136 @@ defmodule CunweiWong.ContentValidator do
     {errors ++ image_errors, warnings ++ image_warnings}
   end
 
-  # credo:disable-for-next-line Credo.Check.Refactor.Nesting
+  defp check_body_line(path, {line, number}, {errors, warnings, nil, headings}) do
+    cond do
+      Regex.match?(~r/^\s*```/, line) ->
+        open_fence(path, line, number, errors, warnings, headings)
+
+      Regex.match?(~r/^\s*\#{1,6}(?:\s|$)/, line) ->
+        check_heading(path, line, number, errors, warnings, headings)
+
+      true ->
+        {errors, warnings, nil, headings}
+    end
+  end
+
+  defp check_body_line(_path, {line, _number}, {errors, warnings, fence, headings}) do
+    if Regex.match?(~r/^\s*```\s*$/, line) do
+      {errors, warnings, nil, headings}
+    else
+      {errors, warnings, fence, headings}
+    end
+  end
+
+  defp open_fence(path, line, number, errors, warnings, headings) do
+    language =
+      line
+      |> String.trim_leading()
+      |> String.trim_leading("```")
+      |> String.trim()
+      |> String.downcase()
+
+    warnings =
+      if language in ["mermaid", "mindmap", "markmap", "plantuml", "graphviz"] do
+        warnings ++
+          [
+            issue(
+              path,
+              number,
+              "diagram fence #{inspect(language)} is not rendered by this site"
+            )
+          ]
+      else
+        warnings
+      end
+
+    {errors, warnings, language, headings}
+  end
+
+  defp check_heading(path, line, number, errors, warnings, headings) do
+    trimmed = String.trim_leading(line)
+
+    level =
+      trimmed
+      |> String.graphemes()
+      |> Enum.take_while(&(&1 == "#"))
+      |> length()
+
+    text =
+      trimmed
+      |> String.trim_leading("#")
+      |> String.trim()
+      |> String.trim_trailing("#")
+      |> String.trim()
+
+    prior =
+      Enum.find(headings, fn {old_level, old_text, _old_line} ->
+        old_level == level and normalize(old_text) == normalize(text)
+      end)
+
+    heading_errors =
+      if text == "", do: [issue(path, number, "heading must not be empty")], else: []
+
+    warnings = warnings ++ repeated_heading_warning(path, prior, level, text, number)
+
+    stack = [
+      {level, text, number}
+      | Enum.reject(headings, fn {old_level, _text, _line} -> old_level == level end)
+    ]
+
+    {errors ++ heading_errors, warnings, nil, stack}
+  end
+
+  defp repeated_heading_warning(_path, nil, _level, _text, _number), do: []
+
+  defp repeated_heading_warning(path, {_old_level, _old_text, old_line}, level, text, number) do
+    [
+      issue(
+        path,
+        number,
+        "repeated H#{level} heading #{inspect(text)} (first at line #{old_line})"
+      )
+    ]
+  end
+
   defp check_images(path, lines, first_line) do
     lines
     |> Enum.with_index(first_line)
-    |> Enum.reduce({[], []}, fn {line, number}, {errors, warnings} ->
-      @image_pattern
-      |> Regex.scan(line, capture: :all_but_first)
-      |> Enum.reduce({errors, warnings}, fn [src], {errors, warnings} ->
-        cond do
-          String.starts_with?(src, ["https://", "http://", "data:", "#", "/"]) ->
-            {errors, warnings}
+    |> Enum.reduce({[], []}, &check_image_line(path, &1, &2))
+  end
 
-          String.match?(src, ~r/^[a-zA-Z]:[\\\/]/) ->
-            {errors,
-             warnings ++ [issue(path, number, "image uses an absolute local path: #{src}")]}
+  defp check_image_line(path, {line, number}, acc) do
+    @image_pattern
+    |> Regex.scan(line, capture: :all_but_first)
+    |> Enum.reduce(acc, fn [src], acc -> check_image_src(path, src, number, acc) end)
+  end
 
-          true ->
-            image_path = Path.expand(Path.join(Path.dirname(path), src))
-            root = Path.expand("assets/static")
+  defp check_image_src(path, src, number, {errors, warnings}) do
+    cond do
+      String.starts_with?(src, ["https://", "http://", "data:", "#", "/"]) ->
+        {errors, warnings}
 
-            file =
-              if String.starts_with?(image_path, root),
-                do: image_path,
-                else: Path.expand(Path.join(root, src))
+      String.match?(src, ~r/^[a-zA-Z]:[\\\/]/) ->
+        {errors, warnings ++ [issue(path, number, "image uses an absolute local path: #{src}")]}
 
-            if File.regular?(file) do
-              {errors, warnings}
-            else
-              {errors, warnings ++ [issue(path, number, "image file not found: #{src}")]}
-            end
-        end
-      end)
-    end)
+      image_file?(path, src) ->
+        {errors, warnings}
+
+      true ->
+        {errors, warnings ++ [issue(path, number, "image file not found: #{src}")]}
+    end
+  end
+
+  defp image_file?(path, src) do
+    image_path = Path.expand(Path.join(Path.dirname(path), src))
+    root = Path.expand("assets/static")
+
+    file =
+      if String.starts_with?(image_path, root),
+        do: image_path,
+        else: Path.expand(Path.join(root, src))
+
+    File.regular?(file)
   end
 
   defp normalize(text), do: text |> String.downcase() |> String.replace(~r/[\s[:punct:]]/u, "")
