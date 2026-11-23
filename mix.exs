@@ -25,7 +25,7 @@ defmodule CunweiWong.MixProject do
       {:makeup_html, "~> 1.0.0"},
       {:phoenix_live_view, "~> 1.2.3"},
       {:tailwind, "~> 0.5.1"},
-      {:bandit, "~> 1.14.1"},
+      {:bandit, "~> 1.15.0"},
       {:credo, "~> 1.7.8"}
     ]
   end
